@@ -7,7 +7,6 @@ export async function GET() {
     const response = await axios.get('https://timdenning.substack.com/feed');
     const parser = new xml2js.Parser();
     const result = await parser.parseStringPromise(response.data);
-    
     const items = result.rss.channel[0].item;
     
     return NextResponse.json(items);
