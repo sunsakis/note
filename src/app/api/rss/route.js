@@ -4,20 +4,26 @@ import xml2js from 'xml2js';
 import { prisma } from '@/lib/prisma';
 import { generateSummary } from '@/lib/summarize';
 
+const ARTICLES_PER_PAGE = 5;
+
 export async function GET(request) {
     try {
       const { searchParams } = new URL(request.url);
       const refresh = searchParams.get('refresh');
+      const page = parseInt(searchParams.get('page') || '1', 10);
 
       const response = await axios.get('https://timdenning.substack.com/feed');
       const parser = new xml2js.Parser();
       const result = await parser.parseStringPromise(response.data);
       const items = result.rss.channel[0].item;
       
+      const startIndex = (page - 1) * ARTICLES_PER_PAGE;
+      const endIndex = startIndex + ARTICLES_PER_PAGE;
+      const pageItems = items.slice(startIndex, endIndex);
+
       const processedArticles = [];
 
-      // Process all items (or limit to a certain number if needed)
-      for (const item of items.slice(0, 5)) { // Process up to 5 articles
+      for (const item of pageItems) {
         const url = item.link[0];
         
         let article = await prisma.article.findUnique({ where: { url } });
@@ -26,7 +32,6 @@ export async function GET(request) {
           const summary = await generateSummary(item['content:encoded'][0] || item.description[0]);
 
           if (article) {
-            // Update existing article
             article = await prisma.article.update({
               where: { url },
               data: {
@@ -38,7 +43,6 @@ export async function GET(request) {
               },
             });
           } else {
-            // Create new article
             article = await prisma.article.create({
               data: {
                 url,

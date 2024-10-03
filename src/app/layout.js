@@ -13,7 +13,7 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Note",
+  title: "Note The World",
   description: "Get the gist of the latest ideas as understood by smart people.",
 };
 
