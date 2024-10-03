@@ -11,6 +11,7 @@ model Article {
   id          Int      @id @default(autoincrement())
   url         String   @unique
   title       String
+  description String
   content     String
   summary     String[]
   publishedAt DateTime
