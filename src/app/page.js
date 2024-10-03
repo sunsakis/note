@@ -12,10 +12,14 @@ export default function Home() {
     fetchArticle();
   }, []);
 
-  const fetchArticle = async () => {
+  const handleRefresh = () => {
+    fetchArticle(true);
+  };
+
+  const fetchArticle = async (forceRefresh = false) => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/rss');
+      const response = await fetch(`/api/rss${forceRefresh ? '?refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error('Failed to fetch article');
       }
@@ -36,7 +40,13 @@ export default function Home() {
   return (
     <div className="container mx-auto p-4">
       <main>
-        <h1 className="text-3xl font-bold mb-4">Note | Smart News Bot</h1>
+        <h1 className="text-3xl font-bold mb-4">Note</h1>
+        {/* <button 
+          onClick={handleRefresh} 
+          className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Refresh
+        </button> */}
         <div className="border p-4 rounded-lg">
           <h2 className="text-xl font-semibold mb-2">
               {article.title}
@@ -53,7 +63,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="mt-8 text-center text-gray-500">
-        &copy; 2023 Note | Smart News Bot
+        &copy;Note
       </footer>
     </div>
   );

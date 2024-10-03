@@ -13,8 +13,8 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Note - Smart News Bot",
-  description: "Get the gist of the latest news as seen through the eyes of smart people.",
+  title: "Note",
+  description: "Get the gist of the latest ideas as understood by smart people.",
 };
 
 export default function RootLayout({ children }) {
