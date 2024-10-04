@@ -11,6 +11,7 @@ export async function GET(request) {
       const { searchParams } = new URL(request.url);
       const refresh = searchParams.get('refresh');
       const page = parseInt(searchParams.get('page') || '1', 10);
+      const deviceType = searchParams.get('deviceType') || 'desktop';
 
       const response = await axios.get('https://timdenning.substack.com/feed');
       const parser = new xml2js.Parser();
@@ -29,7 +30,7 @@ export async function GET(request) {
         let article = await prisma.article.findUnique({ where: { url } });
         
         if (!article || refresh === 'true') {
-          const summary = await generateSummary(item['content:encoded'][0] || item.description[0]);
+          const summary = await generateSummary(item['content:encoded'][0] || item.description[0], deviceType);
 
           if (article) {
             article = await prisma.article.update({
@@ -54,6 +55,11 @@ export async function GET(request) {
               },
             });
           }
+        } else {
+          // If the article exists and we're not refreshing, adjust the summary based on device type
+          if (deviceType === 'mobile') {
+            article.summary = article.summary.join(' '); // Combine paragraphs for mobile
+          }
         }
         
         processedArticles.push(article);
@@ -62,6 +68,6 @@ export async function GET(request) {
       return NextResponse.json(processedArticles);
     } catch (error) {
       console.error('Error fetching RSS feed:', error);
-      return NextResponse.json({ error: 'Error fetching RSS feed' }, { status: 500 });
+      return NextResponse.json({ error: error.message || 'Error fetching RSS feed' }, { status: 500 });
     }
   }

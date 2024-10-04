@@ -9,11 +9,27 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [deviceType, setDeviceType] = useState('desktop');
+
+  useEffect(() => {
+    const checkDeviceType = () => {
+      const isMobile = window.innerWidth <= 768; // You can adjust this breakpoint
+      setDeviceType(isMobile ? 'mobile' : 'desktop');
+    };
+
+    checkDeviceType();
+    window.addEventListener('resize', checkDeviceType);
+    return () => window.removeEventListener('resize', checkDeviceType);
+  }, []);
 
   const fetchArticles = useCallback(async (pageNumber, forceRefresh = false) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/rss?page=${pageNumber}${forceRefresh ? '&refresh=true' : ''}`);
+      if (forceRefresh) {
+        setArticles([]);
+        setPage(1);
+      }
+      const response = await fetch(`/api/rss?page=${pageNumber}&deviceType=${deviceType}${forceRefresh ? '&refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error('Failed to fetch articles');
       }
@@ -30,11 +46,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [deviceType]);
 
   useEffect(() => {
     fetchArticles(page);
-  }, []);
+  }, [fetchArticles]);
 
   const handleScroll = useCallback(() => {
     if (
@@ -67,9 +83,15 @@ export default function Home() {
               {article.title}
             </h2>
             <div className="mt-4">
-              {article.summary.map((paragraph, i) => (
-                <p key={`${article.id}-${index}-${i}`} className="mt-2">{paragraph}</p>
-              ))}
+              {Array.isArray(article.summary) ? (
+                // For desktop: render each paragraph separately
+                article.summary.map((paragraph, i) => (
+                  <p key={`${article.id}-${index}-${i}`} className="mt-2">{paragraph}</p>
+                ))
+              ) : (
+                // For mobile: render the summary as a single paragraph
+                <p className="mt-2">{article.summary}</p>
+              )}
             </div>
             <Link href={`/articles/${article.id}`} className="text-blue-500 hover:underline">
               <p className="mt-2">{article.description}</p>
