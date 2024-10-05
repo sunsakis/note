@@ -9,9 +9,12 @@ const ARTICLES_PER_PAGE = 10;
 const FEED_URLS = [
   'https://timdenning.substack.com/feed',
   'https://niallharbison.substack.com/feed',
-  'https://morgoth.substack.com/feed',
   'https://ravenewworld.substack.com/feed',
+  'https://newsletter.pragmaticengineer.com/feed',
+  'https://www.noahpinion.blog/feed',
 ];
+
+const CUTOFF_DATE = new Date('2024-10-04');
 
 export async function GET(request) {
     try {
@@ -42,13 +45,15 @@ export async function GET(request) {
 
         const processArticle = async (item) => {
           const url = item.link[0];
+          const publishedAt = new Date(item.pubDate[0]);
           
           try {
             let article = await prisma.article.findUnique({ where: { url } });
             
-            if (!article) {
+            if (!article && publishedAt >= CUTOFF_DATE) {
               const content = item['content:encoded'][0] || item.description[0];
               const summary = await generateSummary(content);
+              const imageUrl = item['media:content'] ? item['media:content'][0]['$'].url : null;
               
               const articleData = {
                 url,
@@ -56,14 +61,15 @@ export async function GET(request) {
                 description: item.description[0],
                 content,
                 publishedAt: new Date(item.pubDate[0]),
-                summary, // Store summary as plain text
+                summary,
+                imageUrl,
               };
 
               article = await prisma.article.create({
                 data: articleData,
               });
               console.log(`Article processed and summary generated: ${url}`);
-            } else if (!article.summary) {
+            } else if (article && !article.summary && publishedAt >= CUTOFF_DATE) {
               // Generate summary for existing articles without one
               const summary = await generateSummary(article.content);
               article = await prisma.article.update({
@@ -71,6 +77,10 @@ export async function GET(request) {
                 data: { summary },
               });
               console.log(`Summary generated for existing article: ${url}`);
+            } else if (publishedAt < CUTOFF_DATE) {
+              console.log(`Skipping article published before cutoff date: ${url}`);
+            } else {
+              console.log(`Article already exists with summary: ${url}`);
             }
             return article;
           } catch (dbError) {

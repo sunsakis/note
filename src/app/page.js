@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -121,24 +121,31 @@ export default function Home() {
           </Link>
         </h1>
         {articles.map((article, index) => (
-          <div key={`${article.id}-${index}`} className="border p-4 rounded-lg mb-4">
-            <h2 className="text-xl font-semibold mb-2">
-              {article.title}
-            </h2>
-            <div className="mt-4">
+          <div key={`${article.id}-${index}`} className="border p-4 rounded-lg mb-4 flex">
+            {article.imageUrl && (
+              <div className="mr-4">
+                <img src={article.imageUrl} alt={article.title} className="w-24 h-24 object-cover rounded" />
+              </div>
+            )}
+            <div>
+              <h2 className="text-xl font-semibold mb-2">
+                {article.title}
+              </h2>
+              <div className="mt-4">
                 <p className="mt-2">{article.summary}</p>
+              </div>
+              <Link href={`/articles/${article.id}`} className="text-blue-500 hover:underline">
+                <p className="mt-2">{decodeHTMLEntities(article.description)}</p>
+              </Link>
+              <p className="text-gray-600 mt-2">{new Date(article.publishedAt).toLocaleString()}</p>
             </div>
-            <Link href={`/articles/${article.id}`} className="text-blue-500 hover:underline">
-              <p className="mt-2">{decodeHTMLEntities(article.description)}</p>
-            </Link>
-            <p className="text-gray-600 mt-2">{new Date(article.publishedAt).toLocaleString()}</p>
           </div>
         ))}
         {isLoading && <div>Loading more articles...</div>}
         {!hasMore && <div>No more articles to load.</div>}
       </main>
       <footer className="mt-8 text-center text-gray-500">
-        &copy;Note
+        Note
       </footer>
     </div>
   );

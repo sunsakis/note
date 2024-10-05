@@ -11,7 +11,7 @@ const queue = new pQueue({ concurrency: 1, interval: 1000 });
 export async function generateSummary(content) {
   return queue.add(async () => {
     try {
-      console.log('Generating summary...');
+      console.log('Generating summary...', content.substring(0, 100));
       const response = await anthropic.messages.create({
         model: "claude-3-5-sonnet-20240620",
         max_tokens: 300,
