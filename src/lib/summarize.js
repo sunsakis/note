@@ -16,11 +16,8 @@ export async function generateSummary(content, deviceType = 'desktop') {
 
     const summary = response.content[0].type === 'text' ? response.content[0].text : '';
     
-    if (deviceType === 'mobile') {
-      return [summary]; // Return as a single-element array for consistency
-    } else {
-      return splitIntoTwoParagraphs(summary);
-    }
+    return splitIntoTwoParagraphs(summary); // Return as a single-element array for consistency
+    
   } catch (error) {
     console.error('Error generating summary:', error);
     return ['Error generating summary', 'Please try again later'];

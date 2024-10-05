@@ -2,6 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { loadStripe } from '@stripe/stripe-js';
+
+function decodeHTMLEntities(text) {
+  const textArea = document.createElement('textarea');
+  textArea.innerHTML = text;
+  return textArea.value;
+}
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function Home() {
   const [articles, setArticles] = useState([]);
@@ -9,18 +18,34 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [deviceType, setDeviceType] = useState('desktop');
 
-  useEffect(() => {
-    const checkDeviceType = () => {
-      const isMobile = window.innerWidth <= 768; // You can adjust this breakpoint
-      setDeviceType(isMobile ? 'mobile' : 'desktop');
-    };
-
-    checkDeviceType();
-    window.addEventListener('resize', checkDeviceType);
-    return () => window.removeEventListener('resize', checkDeviceType);
-  }, []);
+  const handleSubscribe = async (articleId) => {
+    const stripe = await stripePromise;
+    try {
+      const response = await fetch('/api/stripe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ articleId }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      const data = await response.json();
+      const result = await stripe.redirectToCheckout({
+        sessionId: data.sessionId,
+      });
+      
+      if (result.error) {
+        console.error(result.error.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   const fetchArticles = useCallback(async (pageNumber, forceRefresh = false) => {
     try {
@@ -29,7 +54,7 @@ export default function Home() {
         setArticles([]);
         setPage(1);
       }
-      const response = await fetch(`/api/rss?page=${pageNumber}&deviceType=${deviceType}${forceRefresh ? '&refresh=true' : ''}`);
+      const response = await fetch(`/api/rss?page=${pageNumber}${forceRefresh ? '&refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error('Failed to fetch articles');
       }
@@ -46,7 +71,7 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, [deviceType]);
+  }, []);
 
   useEffect(() => {
     fetchArticles(page);
@@ -94,8 +119,14 @@ export default function Home() {
               )}
             </div>
             <Link href={`/articles/${article.id}`} className="text-blue-500 hover:underline">
-              <p className="mt-2">{article.description}</p>
+              <p className="mt-2">{decodeHTMLEntities(article.description)}</p>
             </Link>
+            {/* <p
+              onClick={() => handleSubscribe(article.id)}
+              className="text-blue-500 hover:underline mt-2"
+            >
+              {decodeHTMLEntities(article.description)}
+            </p> */}
             <p className="text-gray-600 mt-2">{new Date(article.publishedAt).toLocaleString()}</p>
           </div>
         ))}
