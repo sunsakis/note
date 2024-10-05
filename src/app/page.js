@@ -62,7 +62,15 @@ export default function Home() {
       if (data.length === 0) {
         setHasMore(false);
       } else {
-        setArticles(prevArticles => [...prevArticles, ...data]);
+        setArticles(prevArticles => {
+          const newArticles = data.filter(newArticle => 
+            !prevArticles.some(existingArticle => existingArticle.id === newArticle.id)
+          );
+          const updatedArticles = [...prevArticles, ...newArticles];
+          // Sort articles by publishedAt date in descending order (newest first)
+          updatedArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+          return updatedArticles;
+        });
         setPage(prevPage => prevPage + 1);
       }
     } catch (error) {

@@ -1,33 +1,32 @@
 import Anthropic from '@anthropic-ai/sdk';
+import pQueue from 'p-queue';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-export async function generateSummary(content, deviceType = 'desktop') {
-  try {
-    const response = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20240620",
-      max_tokens: 300,
-      temperature: 0,
-      system: "You are a summarizer. Summarize content in short, catchy sentences. Your summary should be below 50 words. Do not mention the author. Do not include the title of the article.",
-      messages: [{ role: 'user', content }]
-    });
+// Create a queue with concurrency of 1 and a delay between tasks
+const queue = new pQueue({ concurrency: 1, interval: 1000 });
 
-    const summary = response.content[0].type === 'text' ? response.content[0].text : '';
-    
-    return splitIntoTwoParagraphs(summary); // Return as a single-element array for consistency
-    
-  } catch (error) {
-    console.error('Error generating summary:', error);
-    return ['Error generating summary', 'Please try again later'];
-  }
-}
+export async function generateSummary(content) {
+  return queue.add(async () => {
+    try {
+      console.log('Generating summary...');
+      const response = await anthropic.messages.create({
+        model: "claude-3-5-sonnet-20240620",
+        max_tokens: 300,
+        temperature: 0,
+        system: "You are a summarizer. Summarize content in short, catchy sentences. Your summary should be below 30 words. Do not mention the author. Do not include the title of the article.",
+        messages: [{ role: 'user', content }]
+      });
 
-function splitIntoTwoParagraphs(text) {
-  const sentences = text.split('. ');
-  const midpoint = Math.ceil(sentences.length / 2);
-  const firstParagraph = sentences.slice(0, midpoint).join('. ') + '.';
-  const secondParagraph = sentences.slice(midpoint).join('. ');
-  return [firstParagraph, secondParagraph];
+      const summary = response.content[0].type === 'text' ? response.content[0].text : '';
+      console.log('Summary generated successfully');
+      return [summary]; // Return as a single-element array for consistency
+
+    } catch (error) {
+      console.error('Error generating summary:', error);
+      return ['No summary available', 'Click the link below to read the full article'];
+    }
+  });
 }
