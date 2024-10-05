@@ -22,11 +22,11 @@ export async function generateSummary(content) {
 
       const summary = response.content[0].type === 'text' ? response.content[0].text : '';
       console.log('Summary generated successfully');
-      return [summary]; // Return as a single-element array for consistency
+      return summary.trim() || null;
 
     } catch (error) {
       console.error('Error generating summary:', error);
-      return ['No summary available', 'Click the link below to read the full article'];
+      return null;;
     }
   });
 }

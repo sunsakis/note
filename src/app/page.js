@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -8,6 +8,16 @@ function decodeHTMLEntities(text) {
   const textArea = document.createElement('textarea');
   textArea.innerHTML = text;
   return textArea.value;
+}
+
+function parseSummary(summary) {
+  if (!summary) return null;
+  try {
+    return JSON.parse(summary);
+  } catch (error) {
+    console.error('Error parsing summary:', error);
+    return summary; // Return the original string if parsing fails
+  }
 }
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -116,25 +126,11 @@ export default function Home() {
               {article.title}
             </h2>
             <div className="mt-4">
-              {Array.isArray(article.summary) ? (
-                // For desktop: render each paragraph separately
-                article.summary.map((paragraph, i) => (
-                  <p key={`${article.id}-${index}-${i}`} className="mt-2">{paragraph}</p>
-                ))
-              ) : (
-                // For mobile: render the summary as a single paragraph
                 <p className="mt-2">{article.summary}</p>
-              )}
             </div>
             <Link href={`/articles/${article.id}`} className="text-blue-500 hover:underline">
               <p className="mt-2">{decodeHTMLEntities(article.description)}</p>
             </Link>
-            {/* <p
-              onClick={() => handleSubscribe(article.id)}
-              className="text-blue-500 hover:underline mt-2"
-            >
-              {decodeHTMLEntities(article.description)}
-            </p> */}
             <p className="text-gray-600 mt-2">{new Date(article.publishedAt).toLocaleString()}</p>
           </div>
         ))}
