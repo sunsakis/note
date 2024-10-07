@@ -12,6 +12,7 @@ model Article {
   url         String   @unique
   author      String
   title       String
+  titleSlug   String
   description String
   content     String
   summary     String?

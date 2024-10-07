@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateSummary } from '@/lib/summarize';
 import Parser from 'rss-parser';
+import { slugify } from '@/lib/slugify';
 
 const FEED_URLS = [
     'https://timdenning.substack.com/feed',
@@ -95,22 +96,18 @@ async function refetchAndUpdateAllArticles() {
           if (existingArticle) {
             let fullContent = item['content:encoded'] || item.content;
             
-            if (fullContent && fullContent !== existingArticle.content || item.enclosure?.url !== existingArticle.imageUrl || item.categories !== existingArticle.tags || item.author !== existingArticle.author) {
-                let updatedTags = existingArticle.tags || [];
-                if (!updatedTags.includes('english')) {
-                  updatedTags.push('english');
-                }
-
+            if (fullContent && fullContent !== existingArticle.content || item.enclosure?.url !== existingArticle.imageUrl || item.titleSlug == null) {
+                let titleSlug = slugify(item.title);
                 let author = item.author || item.creator || item['dc:creator'] || item.copyright || existingArticle.author;
-                console.log('Extracted author for update:', author);
               await prisma.article.update({
                 where: { id: existingArticle.id },
                 data: {
                   content: fullContent,
                   description: item.contentSnippet || item.description,
-                  tags: updatedTags,
+                  tags: ['english'],
                   imageUrl: item.enclosure?.url || null,
                   author: author,
+                  titleSlug: titleSlug,
                 }
               });
               updatedArticlesCount++;

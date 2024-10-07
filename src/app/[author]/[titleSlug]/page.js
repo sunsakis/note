@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,23 +9,35 @@ export default function ArticlePage({ params }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchArticle(params.id);
-  }, [params.id]);
+  const { author, titleSlug } = params;
 
-  const fetchArticle = async (id) => {
+  useEffect(() => {
+    console.log('ArticlePage: Params received:', params);
+    fetchArticle();
+  }, [author, titleSlug]);
+
+  const fetchArticle = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/articles/${id}`);
+      console.log(`Fetching article for author: ${author}, titleSlug: ${titleSlug}`);
+      const response = await fetch(`/api/${encodeURIComponent(author)}/${encodeURIComponent(titleSlug)}`);
+      console.log('ArticlePage: Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to fetch article');
+        if (response.status === 404) {
+          throw new Error(`Article not found. Please check the URL and try again.`);
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
       const data = await response.json();
+      console.log('Received article data:', data);
       setArticle(data);
+      setIsLoading(false);
+
     } catch (error) {
-      setError('Failed to load article');
-      console.error(error);
-    } finally {
+      console.error('Error fetching article:', error);
+      setError(`Failed to load article: ${error.message}`);
       setIsLoading(false);
     }
   };
@@ -45,7 +58,19 @@ export default function ArticlePage({ params }) {
   };
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return (
+    <div>
+      <p>Error: {error}</p>
+      <p>Attempted to fetch article for:</p>
+      <ul>
+        <li>Author: {author}</li>
+        <li>Title Slug: {titleSlug}</li>
+      </ul>
+      <Link href="/" className="text-blue-500 hover:underline">
+        Return to Home
+      </Link>
+    </div>
+  );
   if (!article) return <div>Article not found</div>;
 
   return (
@@ -59,7 +84,7 @@ export default function ArticlePage({ params }) {
           </Link>
           <p className="text-gray-600 mt-2">{new Date(article.publishedAt).toLocaleString()}</p>
         </div>
-        <Link href="/" className="mt-4 inline-block text-blue-500 hover:underline">
+        <Link href='/' className="mt-4 inline-block text-blue-500 hover:underline">
           Back to Home
         </Link>
       </main>

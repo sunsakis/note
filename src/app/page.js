@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import { slugify } from '@/lib/slugify';
 
 function decodeHTMLEntities(text) {
   const textArea = document.createElement('textarea');
@@ -85,7 +86,7 @@ export default function Home() {
               <div className="mt-4">
                 <p className="mt-2">{article.summary}</p>
               </div>
-              <Link href={`/articles/${article.id}`} className="text-blue-500 hover:underline">
+              <Link href={`/${slugify(article.author)}/${article.titleSlug}`} className="text-blue-500 hover:underline">
                 <p className="mt-2">{decodeHTMLEntities(article.description)}</p>
               </Link>
               <p className="text-gray-600 mt-2">{new Date(article.publishedAt).toLocaleString()}</p>
