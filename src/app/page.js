@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { slugify } from '@/lib/slugify';
+import Image from 'next/image';
 
 function decodeHTMLEntities(text) {
   const textArea = document.createElement('textarea');
@@ -74,12 +75,20 @@ export default function Home() {
             className="border p-4 rounded-lg mb-4 flex"
             ref={index === articles.length - 1 ? lastArticleElementRef : null}
           >
-            {article.imageUrl && (
-              <div className="mr-4">
-                <img src={article.imageUrl} alt={article.title} className="w-24 h-24 object-cover rounded" />
-              </div>
-            )}
-            <div>
+              {article.imageUrl && (
+                <div className="float-left sm:float-none mb-2 sm:mb-0 mr-4 w-24 h-28 flex-shrink-0 relative">
+                  <Image
+                    src={article.imageUrl}
+                    alt={article.description}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 128px"
+                    className="object-cover rounded"
+                    placeholder="blur"
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAJzAN1hP4xpwAAAABJRU5ErkJggg=="
+                  />
+                </div>
+              )}
+            <div className="overflow-hidden">
               <h2 className="text-xl font-semibold mb-2">
                 {article.title}
               </h2>
