@@ -3,18 +3,17 @@ import { prisma } from '@/lib/prisma';
 import { generateSummary } from '@/lib/summarize';
 import Parser from 'rss-parser';
 import { slugify } from '@/lib/slugify';
+import * as cheerio from 'cheerio';
 
 const FEED_URLS = [
-    'https://timdenning.substack.com/feed',
-    'https://niallharbison.substack.com/feed',
-    'https://ravenewworld.substack.com/feed',
-    'https://thegeneralist.substack.com/feed',
-    'https://www.oneusefulthing.org/feed',
-    'https://rogerpielkejr.substack.com/feed',
-    'https://newsletter.mcj.vc/feed',
+    'https://vartotojogidas.substack.com/feed',
+    'https://emilijaviso.substack.com/feed',
+    'https://gustestulpin.substack.com/feed',
+    'https://domasraibys.substack.com/feed',
+    'https://malonumui.substack.com/feed',
   ];
 
-const CUTOFF_DATE = new Date('2024-09-28');
+const CUTOFF_DATE = new Date('2024-10-07');
 const parser = new Parser();
 
 async function fetchAndUpdateRSSFeeds() {
@@ -42,6 +41,13 @@ async function fetchAndUpdateRSSFeeds() {
             if (!existingArticle) {
               // Determine the full content
               let fullContent = item['content:encoded'] || item.content;
+              // Remove subscription widget
+                if (fullContent) {
+                    const $ = cheerio.load(fullContent);
+                    $('.subscription-widget-wrap-editor').remove();
+                    $('.subscription-widget').remove();
+                    fullContent = $.html();
+                }
 
               let author = item.author || item.creator || item['dc:creator'] || item.copyright || null;
               console.log('Extracted author:', author);
@@ -54,9 +60,10 @@ async function fetchAndUpdateRSSFeeds() {
                   description: item.contentSnippet || item.description,
                   content: fullContent,
                   publishedAt: publishedAt,
-                  tags: item.categories || ['english'],
+                  tags: [...(item.categories ?? []), 'lithuanian'],
                   imageUrl: item.enclosure?.url || null,
                   author: author,
+                  titleSlug: slugify(item.title),
                 }
               });
 
@@ -94,9 +101,17 @@ async function refetchAndUpdateAllArticles() {
           });
   
           if (existingArticle) {
+            // Determine the full content
             let fullContent = item['content:encoded'] || item.content;
+            // Remove subscription widget
+            if (fullContent) {
+                const $ = cheerio.load(fullContent);
+                $('.subscription-widget-wrap-editor').remove();
+                $('.subscription-widget').remove();
+                fullContent = $.html();
+            }
             
-            if (fullContent && fullContent !== existingArticle.content || item.enclosure?.url !== existingArticle.imageUrl || item.titleSlug == null) {
+            if (fullContent && item.tags == 'lithuanian' && fullContent !== existingArticle.content || item.enclosure?.url !== existingArticle.imageUrl || item.titleSlug == null) {
                 let titleSlug = slugify(item.title);
                 let author = item.author || item.creator || item['dc:creator'] || item.copyright || existingArticle.author;
               await prisma.article.update({
@@ -104,7 +119,7 @@ async function refetchAndUpdateAllArticles() {
                 data: {
                   content: fullContent,
                   description: item.contentSnippet || item.description,
-                  tags: ['english'],
+                  tags: ['lithuanian'],
                   imageUrl: item.enclosure?.url || null,
                   author: author,
                   titleSlug: titleSlug,

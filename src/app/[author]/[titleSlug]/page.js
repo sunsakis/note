@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Header from '@/app/components/header';
 
 export default function ArticlePage({ params }) {
   const [article, setArticle] = useState(null);
@@ -53,7 +54,28 @@ export default function ArticlePage({ params }) {
     processedContent = processedContent.replace(/<h4>(.*?)<\/h4>/g, '<h4 class="text-xl font-medium my-2">$1</h4>');
     processedContent = processedContent.replace(/<h5>(.*?)<\/h5>/g, '<h5 class="text-lg font-medium my-1">$1</h5>');
     processedContent = processedContent.replace(/<h6>(.*?)<\/h6>/g, '<h6 class="text-base font-medium my-1">$1</h6>');
-    
+
+    // Process YouTube embeds
+    processedContent = processedContent.replace(
+      /<div id="youtube2-.*?" class="youtube-wrap".*?>(.*?)<\/div>/gs,
+      (match, innerContent) => {
+        const iframeSrc = innerContent.match(/src="(.*?)"/)?.[1] || '';
+        return `
+          <div class="relative w-full pt-[56.25%] my-4">
+            <iframe 
+              src="${iframeSrc}" 
+              class="absolute top-0 left-0 w-full h-full" 
+              frameborder="0" 
+              loading="lazy" 
+              gesture="media" 
+              allow="autoplay; fullscreen" 
+              allowfullscreen="true"
+            ></iframe>
+          </div>
+        `;
+      }
+    );
+
     return processedContent;
   };
 
@@ -75,17 +97,18 @@ export default function ArticlePage({ params }) {
 
   return (
     <div className="container mx-auto p-4">
+      <Header />
       <main>
         <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
         <div className="border p-4 rounded-lg">
           <div className="mt-4" dangerouslySetInnerHTML={{ __html: processContent(article.content) }}></div>
           <Link href={article.url} target="_blank" rel="noopener noreferrer nofollow" className="text-blue-500 hover:underline">
-            <p className="mt-2">Original Article</p>
+            <p className="mt-2">original</p>
           </Link>
           <p className="text-gray-600 mt-2">{new Date(article.publishedAt).toLocaleString()}</p>
         </div>
         <Link href='/' className="mt-4 inline-block text-blue-500 hover:underline">
-          Back to Home
+          return
         </Link>
       </main>
     </div>

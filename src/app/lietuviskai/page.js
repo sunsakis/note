@@ -33,7 +33,7 @@ export default function Home() {
   const fetchArticles = useCallback(async (pageNumber) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/rss/lt?page=${pageNumber}&tag=english`);
+      const response = await fetch(`/api/rss/lt?page=${pageNumber}&tag=lithuanian`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -44,7 +44,7 @@ export default function Home() {
         const combinedArticles = [...prevArticles, ...newArticles];
         const uniqueArticles = Array.from(new Set(combinedArticles.map(a => a.id)))
           .map(id => combinedArticles.find(a => a.id === id))
-          .filter(article => article.tags && article.tags.includes('english'));
+          .filter(article => article.tags && article.tags.includes('lithuanian'));
         uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
         return uniqueArticles;
       });
@@ -64,17 +64,17 @@ export default function Home() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold m-1 mb-2 mt-0">
-          <Link href="/">
-            Note
-          </Link>
-        </h1>
-        <Link href="/lietuviskai">
-          <Image src="lithuania_flag.svg" alt="Lietuvos herbas" width={25} height={25} className="m-1 mt-0"/>
-        </Link>
-      </div>
+        <div className="container mx-auto p-4">
+        <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold m-1 mb-2 mt-0">
+            <Link href="/">
+                Note
+            </Link>
+            </h1>
+            <Link href="/lietuviskai">
+            <Image src="lithuania_flag.svg" alt="Lietuvos herbas" width={25} height={25} className="m-1 mt-0"/>
+            </Link>
+        </div>
         <main>
         {articles.map((article, index) => (
           <div 

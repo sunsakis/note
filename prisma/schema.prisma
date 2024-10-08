@@ -10,9 +10,7 @@ datasource db {
 model Article {
   id          Int      @id @default(autoincrement())
   url         String   @unique
-  author      String
   title       String
-  titleSlug   String
   description String
   content     String
   summary     String?
@@ -21,4 +19,6 @@ model Article {
   updatedAt   DateTime @updatedAt
   tags        String[] @default([])
   imageUrl    String?
+  author      String
+  titleSlug   String?
 }
