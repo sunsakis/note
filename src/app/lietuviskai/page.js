@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { slugify } from '@/lib/slugify';
 import Image from 'next/image';
+import Header from '@/app/components/header';
 
 function decodeHTMLEntities(text) {
   const textArea = document.createElement('textarea');
@@ -64,17 +65,8 @@ export default function Home() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-        <div className="container mx-auto p-4">
-        <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold m-1 mb-2 mt-0">
-            <Link href="/">
-                Note
-            </Link>
-            </h1>
-            <Link href="/lietuviskai">
-            <Image src="lithuania_flag.svg" alt="Lietuvos herbas" width={25} height={25} className="m-1 mt-0"/>
-            </Link>
-        </div>
+    <div className="container mx-auto p-4">
+        <Header />
         <main>
         {articles.map((article, index) => (
           <div 
