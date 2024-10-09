@@ -17,6 +17,10 @@ export default function ArticlePage({ params }) {
     fetchArticle();
   }, [author, titleSlug]);
 
+  const getReturnUrl = (articleLanguage) => {
+    return articleLanguage === 'lithuanian' ? '/lietuviskai/' : '/';
+  };
+
   const fetchArticle = async () => {
     try {
       setIsLoading(true);
@@ -95,6 +99,8 @@ export default function ArticlePage({ params }) {
   );
   if (!article) return <div>Article not found</div>;
 
+  const returnUrl = getReturnUrl(article.tags.includes('lithuanian') ? 'lithuanian' : 'english');
+
   return (
     <div className="container mx-auto p-4">
       <Header />
@@ -107,7 +113,7 @@ export default function ArticlePage({ params }) {
           </Link>
           <p className="text-gray-600 mt-2">{new Date(article.publishedAt).toLocaleString()}</p>
         </div>
-        <Link href='/' className="mt-4 inline-block text-blue-500 hover:underline">
+        <Link href={returnUrl} className="mt-4 inline-block text-blue-500 hover:underline">
           return
         </Link>
       </main>

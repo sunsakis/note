@@ -16,29 +16,48 @@ const FEED_URLS = [
 const CUTOFF_DATE = new Date('2024-10-07');
 const parser = new Parser();
 
+function extractSlugFromUrl(url) {
+  const parts = url.split('/');
+  let slug = parts[parts.length - 1];
+  // Remove trailing alphanumeric characters after a hyphen
+  return slug.replace(/-[a-zA-Z0-9]+$/, '');
+}
+
 async function fetchAndUpdateRSSFeeds() {
-    try {
-      let newArticlesCount = 0;
-      for (const feedUrl of FEED_URLS) {
-        const feed = await parser.parseURL(feedUrl);
-        
-        for (const item of feed.items) {
-          const publishedAt = new Date(item.pubDate);
-          console.log('--- New Item ---');
-          console.log('Title:', item.title);
-          console.log('Link:', item.link);
-          console.log('Author:', item.author);
-          console.log('Creator:', item.creator);
-          console.log('DC:Creator:', item['dc:creator']);
-          console.log('Copyright:', item.copyright);
-          console.log('Raw item:', JSON.stringify(item, null, 2));
-          
-          if (publishedAt >= CUTOFF_DATE) {
-            const existingArticle = await prisma.article.findUnique({
-              where: { url: item.link }
-            });
-  
-            if (!existingArticle) {
+  try {
+    let newArticlesCount = 0;
+    let slugMap = new Map();
+
+    for (const feedUrl of FEED_URLS) {
+      const feed = await parser.parseURL(feedUrl);
+      
+      for (const item of feed.items) {
+        const publishedAt = new Date(item.pubDate);
+        const slug = extractSlugFromUrl(item.link);
+
+        if (publishedAt >= CUTOFF_DATE) {
+          if (slugMap.has(slug)) {
+            // If we've seen this slug before, compare dates
+            const existingItem = slugMap.get(slug);
+            if (publishedAt > new Date(existingItem.pubDate)) {
+              // If the current item is newer, replace the existing one
+              slugMap.set(slug, item);
+            }
+          } else {
+            // If we haven't seen this slug before, add it to the map
+            slugMap.set(slug, item);
+          }
+        }
+      }
+    }
+
+    // Now process the unique items
+    for (const [slug, item] of slugMap) {
+      const existingArticle = await prisma.article.findUnique({
+        where: { url: item.link }
+      });
+
+      if (!existingArticle) {
               // Determine the full content
               let fullContent = item['content:encoded'] || item.content;
               // Remove subscription widget
@@ -63,7 +82,7 @@ async function fetchAndUpdateRSSFeeds() {
                   tags: [...(item.categories ?? []), 'lithuanian'],
                   imageUrl: item.enclosure?.url || null,
                   author: author,
-                  titleSlug: slugify(item.title),
+                  titleSlug: extractSlugFromUrl(item.link),
                 }
               });
 
@@ -79,28 +98,43 @@ async function fetchAndUpdateRSSFeeds() {
               newArticlesCount++;
             }
           }
+      
+          return newArticlesCount;
+        } catch (error) {
+          console.error('Error updating RSS feeds:', error);
+          throw error;
         }
       }
-      return newArticlesCount;
-    } catch (error) {
-      console.error('Error updating RSS feeds:', error);
-      throw error;
-    }
-}
 
-async function refetchAndUpdateAllArticles() {
-    try {
-      let updatedArticlesCount = 0;
+      async function refetchAndUpdateAllArticles() {
+        try {
+          let updatedArticlesCount = 0;
+          let slugMap = new Map();
+          
+          for (const feedUrl of FEED_URLS) {
+            const feed = await parser.parseURL(feedUrl);
+            
+            for (const item of feed.items) {
+              const slug = extractSlugFromUrl(item.link);
+              const publishedAt = new Date(item.pubDate);
       
-      for (const feedUrl of FEED_URLS) {
-        const feed = await parser.parseURL(feedUrl);
-        
-        for (const item of feed.items) {
-          const existingArticle = await prisma.article.findUnique({
-            where: { url: item.link }
-          });
-  
-          if (existingArticle) {
+              if (slugMap.has(slug)) {
+                const existingItem = slugMap.get(slug);
+                if (publishedAt > new Date(existingItem.pubDate)) {
+                  slugMap.set(slug, item);
+                }
+              } else {
+                slugMap.set(slug, item);
+              }
+            }
+          }
+      
+          for (const [slug, item] of slugMap) {
+            const existingArticle = await prisma.article.findUnique({
+              where: { url: item.link }
+            });
+      
+            if (existingArticle) {
             // Determine the full content
             let fullContent = item['content:encoded'] || item.content;
             // Remove subscription widget
@@ -112,7 +146,6 @@ async function refetchAndUpdateAllArticles() {
             }
             
             if (fullContent && item.tags == 'lithuanian' && fullContent !== existingArticle.content || item.enclosure?.url !== existingArticle.imageUrl || item.titleSlug == null) {
-                let titleSlug = slugify(item.title);
                 let author = item.author || item.creator || item['dc:creator'] || item.copyright || existingArticle.author;
               await prisma.article.update({
                 where: { id: existingArticle.id },
@@ -122,7 +155,7 @@ async function refetchAndUpdateAllArticles() {
                   tags: ['lithuanian'],
                   imageUrl: item.enclosure?.url || null,
                   author: author,
-                  titleSlug: titleSlug,
+                  titleSlug: extractSlugFromUrl(item.link),
                 }
               });
               updatedArticlesCount++;
@@ -131,13 +164,13 @@ async function refetchAndUpdateAllArticles() {
             }
           }
         }
+    
+        return updatedArticlesCount;
+      } catch (error) {
+        console.error('Error refetching and updating articles:', error);
+        throw error;
       }
-      return updatedArticlesCount;
-    } catch (error) {
-      console.error('Error refetching and updating articles:', error);
-      throw error;
     }
-}
 
 export async function GET(request) {
   try {

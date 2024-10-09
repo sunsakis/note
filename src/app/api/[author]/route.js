@@ -20,6 +20,13 @@ export async function GET(request, { params }) {
         author: author,
         titleSlug: titleSlug
       },
+      select: {
+        title: true,
+        content: true,
+        url: true,
+        publishedAt: true,
+        tags: true,
+      }
     });
 
     console.log('API: Database query result:', article);
@@ -29,8 +36,17 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Article not found' }, { status: 404 });
     }
 
+    // Determine the language based on tags
+    const language = article.tags.includes('lithuanian') ? 'lithuanian' : 'english';
+
+    // Create a new object with all article properties and the determined language
+    const articleWithLanguage = {
+      ...article,
+      language: language
+    };
+
     console.log('API: Returning article data');
-    return NextResponse.json(article);
+    return NextResponse.json(articleWithLanguage);
   } catch (error) {
     console.error('API: Error fetching article:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
