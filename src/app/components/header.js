@@ -50,7 +50,7 @@ export default function Header() {
       <div className="flex-grow flex justify-center">
         <button onClick={handleCheckout}>
           <Image 
-            src="/dollar_coin.png" 
+            src="/coffee.png" 
             alt="Front of a $1 dollar coin with Lady Liberty holding the Torch of Freedom up high." 
             width={65} 
             height={65} 

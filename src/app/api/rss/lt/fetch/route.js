@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateSummary } from '@/lib/summarize';
 import Parser from 'rss-parser';
-import { slugify } from '@/lib/slugify';
 import * as cheerio from 'cheerio';
 
 const FEED_URLS = [
@@ -11,6 +10,7 @@ const FEED_URLS = [
     'https://gustestulpin.substack.com/feed',
     'https://domasraibys.substack.com/feed',
     'https://malonumui.substack.com/feed',
+    'https://laurinavicius.substack.com/feed',
   ];
 
 const CUTOFF_DATE = new Date('2024-10-07');
@@ -36,6 +36,12 @@ async function fetchAndUpdateRSSFeeds() {
         const slug = extractSlugFromUrl(item.link);
 
         if (publishedAt >= CUTOFF_DATE) {
+          if (publishedAt >= CUTOFF_DATE) {
+            console.log('--- New Item ---');
+            console.log('Title:', item.title);
+            console.log('Link:', item.link);
+            console.log('Creator:', item.creator);
+            console.log('Published:', publishedAt);
           if (slugMap.has(slug)) {
             // If we've seen this slug before, compare dates
             const existingItem = slugMap.get(slug);
@@ -58,53 +64,52 @@ async function fetchAndUpdateRSSFeeds() {
       });
 
       if (!existingArticle) {
-              // Determine the full content
-              let fullContent = item['content:encoded'] || item.content;
-              // Remove subscription widget
-                if (fullContent) {
-                    const $ = cheerio.load(fullContent);
-                    $('.subscription-widget-wrap-editor').remove();
-                    $('.subscription-widget').remove();
-                    fullContent = $.html();
-                }
-
-              let author = item.author || item.creator || item['dc:creator'] || item.copyright || null;
-              console.log('Extracted author:', author);
-              
-              
-              const newArticle = await prisma.article.create({
-                data: {
-                  url: item.link,
-                  title: item.title,
-                  description: item.contentSnippet || item.description,
-                  content: fullContent,
-                  publishedAt: publishedAt,
-                  tags: [...(item.categories ?? []), 'lithuanian'],
-                  imageUrl: item.enclosure?.url || null,
-                  author: author,
-                  titleSlug: extractSlugFromUrl(item.link),
-                }
-              });
-
-              console.log(`Author saved in DB: ${newArticle.author}`);
-  
-              // Generate summary for the new article
-              const summary = await generateSummary(fullContent);
-              await prisma.article.update({
-                where: { id: newArticle.id },
-                data: { summary }
-              });
-  
-              newArticlesCount++;
-            }
-          }
-      
-          return newArticlesCount;
-        } catch (error) {
-          console.error('Error updating RSS feeds:', error);
-          throw error;
+        // Determine the full content
+        let fullContent = item['content:encoded'] || item.content;
+        // Remove subscription widget
+        if (fullContent) {
+          const $ = cheerio.load(fullContent);
+          $('.subscription-widget-wrap-editor').remove();
+          $('.subscription-widget').remove();
+          fullContent = $.html();
         }
+
+        let author = item.author || item.creator || item['dc:creator'] || item.copyright || null;
+        console.log('Extracted author:', author);
+        
+        const newArticle = await prisma.article.create({
+          data: {
+            url: item.link,
+            title: item.title,
+            description: item.contentSnippet || item.description,
+            content: fullContent,
+            publishedAt: new Date(item.pubDate),
+            tags: [...(item.categories ?? []), 'lithuanian'],
+            imageUrl: item.enclosure?.url || null,
+            author: author,
+            titleSlug: extractSlugFromUrl(item.link),
+          }
+        });
+
+        console.log(`Author saved in DB: ${newArticle.author}`);
+
+        // Generate summary for the new article
+        const summary = await generateSummary(fullContent);
+        await prisma.article.update({
+          where: { id: newArticle.id },
+          data: { summary }
+        });
+
+        newArticlesCount++;
       }
+    }
+    
+    return newArticlesCount;
+  } catch (error) {
+    console.error('Error updating RSS feeds:', error);
+    throw error;
+  }
+}
 
       async function refetchAndUpdateAllArticles() {
         try {

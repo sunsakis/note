@@ -26,16 +26,13 @@ async function fetchAndUpdateRSSFeeds() {
         
         for (const item of feed.items) {
           const publishedAt = new Date(item.pubDate);
-          console.log('--- New Item ---');
-          console.log('Title:', item.title);
-          console.log('Link:', item.link);
-          console.log('Author:', item.author);
-          console.log('Creator:', item.creator);
-          console.log('DC:Creator:', item['dc:creator']);
-          console.log('Copyright:', item.copyright);
-          console.log('Raw item:', JSON.stringify(item, null, 2));
           
           if (publishedAt >= CUTOFF_DATE) {
+            console.log('--- New Item ---');
+            console.log('Title:', item.title);
+            console.log('Link:', item.link);
+            console.log('Creator:', item.creator);
+            console.log('Published:', publishedAt);
             const existingArticle = await prisma.article.findUnique({
               where: { url: item.link }
             });
@@ -144,7 +141,7 @@ export async function GET(request) {
   try {
     const newArticlesCount = await fetchAndUpdateRSSFeeds();
     return NextResponse.json({ 
-      message: `RSS feeds update completed. Added ${newArticlesCount} new articles published on or after ${CUTOFF_DATE.toISOString()}.` 
+      message: `RSS English feeds update completed. Added ${newArticlesCount} new articles published on or after ${CUTOFF_DATE.toISOString()}.` 
     });
   } catch (error) {
     return NextResponse.json({ error: error.message || 'Error updating RSS feeds' }, { status: 500 });
