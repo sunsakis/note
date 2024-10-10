@@ -31,13 +31,13 @@ async function fetchAndUpdateRSSFeeds() {
       
       for (const item of feed.items) {
         const publishedAt = new Date(item.pubDate);
-        console.log('--- New Item ---');
-        console.log('Title:', item.title);
-        console.log('Link:', item.link);
-        console.log('Author:', item.author);
-        console.log('Creator:', item.creator);
         
         if (publishedAt >= CUTOFF_DATE) {
+          console.log('--- New Item ---');
+          console.log('Title:', item.title);
+          console.log('Link:', item.link);
+          console.log('Creator:', item.creator);
+          console.log('Published:', publishedAt);
           const existingArticle = await prisma.article.findUnique({
             where: { url: item.link }
           });
