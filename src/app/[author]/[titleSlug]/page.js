@@ -4,18 +4,25 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/app/components/header';
+import { useSession } from 'next-auth/react';
+import SubscribeButton from '@/app/components/SubscribeButton';
+import { usePathname } from 'next/navigation';
 
 export default function ArticlePage({ params }) {
   const [article, setArticle] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
+
+  const pathname = usePathname();
 
   const { author, titleSlug } = params;
 
   useEffect(() => {
-    console.log('ArticlePage: Params received:', params);
-    fetchArticle();
-  }, [author, titleSlug]);
+    if (status !== "loading") {
+      fetchArticle();
+    }
+  }, [author, titleSlug, status]);
 
   const getReturnUrl = (articleLanguage) => {
     return articleLanguage === 'lithuanian' ? '/lietuviskai/' : '/';
@@ -24,7 +31,6 @@ export default function ArticlePage({ params }) {
   const fetchArticle = async () => {
     try {
       setIsLoading(true);
-      console.log(`Fetching article for author: ${author}, titleSlug: ${titleSlug}`);
       const response = await fetch(`/api/${encodeURIComponent(author)}/${encodeURIComponent(titleSlug)}`);
       console.log('ArticlePage: Response status:', response.status);
 
@@ -36,13 +42,11 @@ export default function ArticlePage({ params }) {
       }
       
       const data = await response.json();
-      console.log('Received article data:', data);
       setArticle(data);
-      setIsLoading(false);
-
     } catch (error) {
       console.error('Error fetching article:', error);
       setError(`Failed to load article: ${error.message}`);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -83,7 +87,7 @@ export default function ArticlePage({ params }) {
     return processedContent;
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (status === "loading" || isLoading) return <div>Loading...</div>;
   if (error) return (
     <div>
       <p>Error: {error}</p>
@@ -100,6 +104,28 @@ export default function ArticlePage({ params }) {
   if (!article) return <div>Article not found</div>;
 
   const returnUrl = getReturnUrl(article.tags.includes('lithuanian') ? 'lithuanian' : 'english');
+
+  // Check if the article is premium and user is not subscribed
+  const isPremiumContent = article.tags.includes('vc');
+  const isUserSubscribed = session?.user?.isPremium;
+
+  if (isPremiumContent && !isUserSubscribed) {
+    return (
+      <div className="container mx-auto p-4">
+        <Header />
+        <main>
+          <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+          <div className="border p-4 rounded-lg">
+            <p>This is a premium article. Please subscribe to read the full content.</p>
+             <SubscribeButton articleUrl={pathname} />
+          </div>
+          <Link href={returnUrl} className="mt-4 inline-block text-blue-500 hover:underline">
+            return
+          </Link>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">

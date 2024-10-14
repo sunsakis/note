@@ -16,16 +16,54 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+ALTER TABLE ONLY public."Session" DROP CONSTRAINT "Session_userId_fkey";
+ALTER TABLE ONLY public."Account" DROP CONSTRAINT "Account_userId_fkey";
+DROP INDEX public."VerificationToken_token_key";
+DROP INDEX public."VerificationToken_identifier_token_key";
+DROP INDEX public."User_email_key";
+DROP INDEX public."Session_sessionToken_key";
 DROP INDEX public."Article_url_key";
+DROP INDEX public."Account_provider_providerAccountId_key";
 ALTER TABLE ONLY public._prisma_migrations DROP CONSTRAINT _prisma_migrations_pkey;
+ALTER TABLE ONLY public."User" DROP CONSTRAINT "User_pkey";
+ALTER TABLE ONLY public."Session" DROP CONSTRAINT "Session_pkey";
 ALTER TABLE ONLY public."Article" DROP CONSTRAINT "Article_pkey";
+ALTER TABLE ONLY public."Account" DROP CONSTRAINT "Account_pkey";
 ALTER TABLE public."Article" ALTER COLUMN id DROP DEFAULT;
 DROP TABLE public._prisma_migrations;
+DROP TABLE public."VerificationToken";
+DROP TABLE public."User";
+DROP TABLE public."Session";
 DROP SEQUENCE public."Article_id_seq";
 DROP TABLE public."Article";
+DROP TABLE public."Account";
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: Account; Type: TABLE; Schema: public; Owner: teogreg
+--
+
+CREATE TABLE public."Account" (
+    id text NOT NULL,
+    "userId" text NOT NULL,
+    type text NOT NULL,
+    provider text NOT NULL,
+    "providerAccountId" text NOT NULL,
+    refresh_token text,
+    access_token text,
+    expires_at integer,
+    token_type text,
+    scope text,
+    id_token text,
+    session_state text,
+    oauth_token_secret text,
+    oauth_token text
+);
+
+
+ALTER TABLE public."Account" OWNER TO teogreg;
 
 --
 -- Name: Article; Type: TABLE; Schema: public; Owner: teogreg
@@ -73,6 +111,50 @@ ALTER SEQUENCE public."Article_id_seq" OWNED BY public."Article".id;
 
 
 --
+-- Name: Session; Type: TABLE; Schema: public; Owner: teogreg
+--
+
+CREATE TABLE public."Session" (
+    id text NOT NULL,
+    "sessionToken" text NOT NULL,
+    "userId" text NOT NULL,
+    expires timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."Session" OWNER TO teogreg;
+
+--
+-- Name: User; Type: TABLE; Schema: public; Owner: teogreg
+--
+
+CREATE TABLE public."User" (
+    id text NOT NULL,
+    name text,
+    email text,
+    "emailVerified" timestamp(3) without time zone,
+    image text,
+    "isPremium" boolean DEFAULT false NOT NULL,
+    "stripeCustomerId" text
+);
+
+
+ALTER TABLE public."User" OWNER TO teogreg;
+
+--
+-- Name: VerificationToken; Type: TABLE; Schema: public; Owner: teogreg
+--
+
+CREATE TABLE public."VerificationToken" (
+    identifier text NOT NULL,
+    token text NOT NULL,
+    expires timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."VerificationToken" OWNER TO teogreg;
+
+--
 -- Name: _prisma_migrations; Type: TABLE; Schema: public; Owner: teogreg
 --
 
@@ -95,6 +177,15 @@ ALTER TABLE public._prisma_migrations OWNER TO teogreg;
 --
 
 ALTER TABLE ONLY public."Article" ALTER COLUMN id SET DEFAULT nextval('public."Article_id_seq"'::regclass);
+
+
+--
+-- Data for Name: Account; Type: TABLE DATA; Schema: public; Owner: teogreg
+--
+
+COPY public."Account" (id, "userId", type, provider, "providerAccountId", refresh_token, access_token, expires_at, token_type, scope, id_token, session_state, oauth_token_secret, oauth_token) FROM stdin;
+cm29gjqi50007dc1fsrtaqvw1	cm29gjqi20005dc1f7f6zt6ak	oauth	google	116783530597225212061	\N	ya29.a0AcM612ydQRuFIsimT55xyTcAi_8fKVaarOkAqnrxG6MmtAcT5UFYjhufMSHCeI_7LokgkiFBPIkXGFtf7W_-TcUXryxc-gW5Kcx8UPXw4qpAYqe3HUAhoJibKbKKYvTe0FhBZxeGkz5oGF-O_cx0TaClOwJPWJoc1QaCgYKAdwSARMSFQHGX2MiKLH4yLY7I9nyGsgnwpFoVw0169	1728940763	Bearer	openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile	eyJhbGciOiJSUzI1NiIsImtpZCI6ImE1MGY2ZTcwZWY0YjU0OGE1ZmQ5MTQyZWVjZDFmYjhmNTRkY2U5ZWUiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI5Mjc1MjMzMTE3MzEtdWQ1MmJrbDZuYmhrcDU5cjVhb3Y1NmNia2NsbmpxdmQuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI5Mjc1MjMzMTE3MzEtdWQ1MmJrbDZuYmhrcDU5cjVhb3Y1NmNia2NsbmpxdmQuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTY3ODM1MzA1OTcyMjUyMTIwNjEiLCJlbWFpbCI6InRlb2dyZWdAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiI0TkhaZHdrUWtvclhSMDR6RFpmdkh3IiwibmFtZSI6IlRlb2RvcmFzIEdyaWdhbGnFq25hcyIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NJTGNJUjlCNjZzU1FBNUtmbmROcXFaVGQ2QmltV2xDNWtmN3Z5N2RPelZxcXY3ODI2dD1zOTYtYyIsImdpdmVuX25hbWUiOiJUZW9kb3JhcyIsImZhbWlseV9uYW1lIjoiR3JpZ2FsacWrbmFzIiwiaWF0IjoxNzI4OTM3MTY0LCJleHAiOjE3Mjg5NDA3NjR9.yobt9vOwRK99qhk1Wm02dKaA8hejiDV7J899D7ZVAbS7HxwI-lrlTn-FNcMTlzWGmgf3WAF4-c1m-x3b61F0DU98Fvej4grp3236DAnZV0gSnYwHIqzch2FIXCfH6Buibn9ZV3M1coBmp42Zz5bz0PxDTUiBhdXjO1Uv8Bj_LjI86L10eAGgEVED9lmjUnehLQ-6v6WTeDydQypWb1Au2AX-kRcgIyw7BiwspvTIPJP_PSXRTOS0TrI0m46dj8jF3-l9LsbkWYh-bhK2Czl7OpHhkVtY-o58uDlhI_9fC7x1z3mIGhprU63eZFGhL9EHemUrglhZCg4XS8tlFR3k1g	\N	\N	\N
+\.
 
 
 --
@@ -202,11 +293,38 @@ COPY public."Article" (id, url, title, description, content, summary, "published
 
 
 --
+-- Data for Name: Session; Type: TABLE DATA; Schema: public; Owner: teogreg
+--
+
+COPY public."Session" (id, "sessionToken", "userId", expires) FROM stdin;
+cm29gjqi70009dc1f93rk066u	66542102-25ee-4078-accd-d3ea56950948	cm29gjqi20005dc1f7f6zt6ak	2024-11-13 20:19:25.039
+\.
+
+
+--
+-- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: teogreg
+--
+
+COPY public."User" (id, name, email, "emailVerified", image, "isPremium", "stripeCustomerId") FROM stdin;
+cm29gjqi20005dc1f7f6zt6ak	Teodoras Grigaliūnas	teogreg@gmail.com	\N	https://lh3.googleusercontent.com/a/ACg8ocILcIR9B66sSQA5KfndNqqZTd6BimWlC5kf7vy7dOzVqqv7826t=s96-c	t	cus_R1yhV8vf56EAcp
+\.
+
+
+--
+-- Data for Name: VerificationToken; Type: TABLE DATA; Schema: public; Owner: teogreg
+--
+
+COPY public."VerificationToken" (identifier, token, expires) FROM stdin;
+\.
+
+
+--
 -- Data for Name: _prisma_migrations; Type: TABLE DATA; Schema: public; Owner: teogreg
 --
 
 COPY public._prisma_migrations (id, checksum, finished_at, migration_name, logs, rolled_back_at, started_at, applied_steps_count) FROM stdin;
 e372d7dc-b260-4ec0-9790-405ec9a8e602	b24e472dcdf032bb087e3e26e5ac196f3609652ba52afddeb6641f8bd0128378	2024-10-09 11:51:28.265083+03	20241009085128_init	\N	\N	2024-10-09 11:51:28.25955+03	1
+be618ced-0ece-4519-b466-54bd516ce702	afcb058b080ca4ac81aac38912be00c2659ab18edbf01a62c6ca454923fe7608	2024-10-14 18:54:19.015827+03	20241014155418_add_user_models	\N	\N	2024-10-14 18:54:19.002648+03	1
 \.
 
 
@@ -218,11 +336,35 @@ SELECT pg_catalog.setval('public."Article_id_seq"', 160, true);
 
 
 --
+-- Name: Account Account_pkey; Type: CONSTRAINT; Schema: public; Owner: teogreg
+--
+
+ALTER TABLE ONLY public."Account"
+    ADD CONSTRAINT "Account_pkey" PRIMARY KEY (id);
+
+
+--
 -- Name: Article Article_pkey; Type: CONSTRAINT; Schema: public; Owner: teogreg
 --
 
 ALTER TABLE ONLY public."Article"
     ADD CONSTRAINT "Article_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Session Session_pkey; Type: CONSTRAINT; Schema: public; Owner: teogreg
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: teogreg
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_pkey" PRIMARY KEY (id);
 
 
 --
@@ -234,10 +376,61 @@ ALTER TABLE ONLY public._prisma_migrations
 
 
 --
+-- Name: Account_provider_providerAccountId_key; Type: INDEX; Schema: public; Owner: teogreg
+--
+
+CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON public."Account" USING btree (provider, "providerAccountId");
+
+
+--
 -- Name: Article_url_key; Type: INDEX; Schema: public; Owner: teogreg
 --
 
 CREATE UNIQUE INDEX "Article_url_key" ON public."Article" USING btree (url);
+
+
+--
+-- Name: Session_sessionToken_key; Type: INDEX; Schema: public; Owner: teogreg
+--
+
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON public."Session" USING btree ("sessionToken");
+
+
+--
+-- Name: User_email_key; Type: INDEX; Schema: public; Owner: teogreg
+--
+
+CREATE UNIQUE INDEX "User_email_key" ON public."User" USING btree (email);
+
+
+--
+-- Name: VerificationToken_identifier_token_key; Type: INDEX; Schema: public; Owner: teogreg
+--
+
+CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON public."VerificationToken" USING btree (identifier, token);
+
+
+--
+-- Name: VerificationToken_token_key; Type: INDEX; Schema: public; Owner: teogreg
+--
+
+CREATE UNIQUE INDEX "VerificationToken_token_key" ON public."VerificationToken" USING btree (token);
+
+
+--
+-- Name: Account Account_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: teogreg
+--
+
+ALTER TABLE ONLY public."Account"
+    ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: Session Session_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: teogreg
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
