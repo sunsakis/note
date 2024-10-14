@@ -14,9 +14,9 @@ export async function generateSummary(content) {
       console.log('Generating summary...', content.substring(0, 100));
       const response = await anthropic.messages.create({
         model: "claude-3-haiku-20240307",
-        max_tokens: 35,
+        max_tokens: 50,
         temperature: 0,
-        system: "Summarize content in short, catchy sentences. Get right into it. Do not translate - use the same language. Your summary should be below 25 words. Do not mention the author. Do not include the title of the article.",
+        system: "Summarize content in short, catchu sentences. Make sure the summary is not longer than 25 words. Do not translate - use the same language. Do not mention the author. Do not include the title of the article.",
         messages: [{ role: 'user', content }]
       });
 

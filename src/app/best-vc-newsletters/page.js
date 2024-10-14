@@ -35,7 +35,7 @@ export default function Home() {
   const fetchArticles = useCallback(async (pageNumber) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/rss/lt?page=${pageNumber}&tag=english`);
+      const response = await fetch(`/api/rss/vc?page=${pageNumber}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -46,7 +46,7 @@ export default function Home() {
         const combinedArticles = [...prevArticles, ...newArticles];
         const uniqueArticles = Array.from(new Set(combinedArticles.map(a => a.id)))
           .map(id => combinedArticles.find(a => a.id === id))
-          .filter(article => article.tags && article.tags.includes('english'));
+          .filter(article => article.tags && article.tags.includes('vc'));
         uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
         return uniqueArticles;
       });
@@ -69,6 +69,9 @@ export default function Home() {
     <div className="container mx-auto p-4">
         <Header />
         <main>
+            <h1 className="text-2xl font-bold mb-4 mx-auto text-center">
+                Venture Capital
+            </h1>
         {articles.map((article, index) => (
           <div 
             key={`${article.id}-${index}`} 
@@ -93,7 +96,7 @@ export default function Home() {
                 {article.title}
               </h2>
               <div className="mt-4">
-                <p className="mt-2">{article.summary}</p>
+                <h3 className="mt-2">{article.summary}</h3>
               </div>
               <Link href={`/${slugify(article.author)}/${article.titleSlug}`} className="text-blue-500 hover:underline">
                 <p className="mt-2">{decodeHTMLEntities(article.description)}</p>
@@ -105,7 +108,7 @@ export default function Home() {
         {isLoading && <div>Loading more articles...</div>}
         {!hasMore && <div>No more articles to load.</div>}
       </main>
-      <Footer />
+        <Footer />
     </div>
   );
 }
