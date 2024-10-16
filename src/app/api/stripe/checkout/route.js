@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+let stripe;
 
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2023-10-16', // Use the latest API version
+    apiVersion: '2024-09-30.acacia', // Use the latest API version
   });
 } else {
   console.error('STRIPE_SECRET_KEY is not set');
