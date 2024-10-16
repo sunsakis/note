@@ -116,7 +116,7 @@ export default function ArticlePage({ params }) {
         <main>
           <h2 className="text-3xl font-bold mb-4">{article.title}</h2>
           <div className="border p-4 rounded-lg">
-            <p>This is a premium article. Please subscribe to read the full content.</p>
+            <p>This is a premium article. Please pay a one-time fee to unlock all of Note's content.</p>
              <SubscribeButton articleUrl={pathname} />
           </div>
           <Link href={returnUrl} className="mt-4 inline-block text-blue-500 hover:underline">

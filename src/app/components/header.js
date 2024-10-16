@@ -48,9 +48,6 @@ export default function Header() {
             Note
           </Link>
         </p>
-        <div className="flex-grow flex justify-center">
-          <h1 className="text-xl font-bold">Newsletter summaries</h1>
-        </div>
         {/* <Link href="/lietuviskai">
           <Image src="/lithuania_flag.svg" alt="Lietuvos herbas" width={25} height={25} className="m-1 mt-0"/>
         </Link> */}
@@ -68,6 +65,9 @@ export default function Header() {
               <p className=" font-bold">Best VC Newsletters</p>
             </button>
           </Link>
+      </div>
+      <div className="flex-grow flex justify-center mb-5">
+          <h1 className="text-xl font-bold">Newsletter summaries</h1>
       </div>
       {/* <div className="flex-grow flex justify-center m-3 mb-5">
           <Link href="/best-vc-newsletters">
