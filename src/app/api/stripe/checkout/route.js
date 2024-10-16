@@ -18,7 +18,7 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Stripe is not configured' }, { status: 500 });
   }
   const session = await getServerSession(authOptions);
-  const { articleUrl } = await req.json();  // Get the article URL from the request body
+  const { articleUrl = '/' } = await req.json();
 
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -39,9 +39,10 @@ export async function POST(req) {
       client_reference_id: session.user.id,
     });
 
+    console.log('Checkout session created:', checkoutSession);
     return NextResponse.json({ sessionId: checkoutSession.id });
   } catch (error) {
     console.error('Error creating checkout session:', error);
-    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
