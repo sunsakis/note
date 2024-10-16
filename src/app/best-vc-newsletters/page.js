@@ -69,9 +69,6 @@ export default function Home() {
     <div className="container mx-auto p-4">
         <Header />
         <main>
-            <h1 className="text-2xl font-bold mb-4 mx-auto text-center">
-                Venture Capital
-            </h1>
         {articles.map((article, index) => (
           <div 
             key={`${article.id}-${index}`} 

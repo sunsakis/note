@@ -16,9 +16,9 @@ export default function SuccessContent() {
 
   return (
     <div className="border p-4 rounded-lg mb-4">
-      <h1 className="text-2xl font-semibold mb-4">Thank you for your subscription!</h1>
-      <p className="mb-4">Now you can request to add an author to the feed.</p>
-      <p className="mb-4">He/she will be added when 2 subscribers request it.</p>
+      <p className="text-2xl font-semibold mb-4">Thank you for your payment!</p>
+      <p className="mb-4">Feel free to request to add an author to the feed.</p>
+      <p className="mb-4">He/she will be added when at least 2 users request it.</p>
       <p className="mb-4">Simply write to us:</p>
       <a href="mailto:news@note.live" className="text-blue-500 hover:underline">news@note.live</a>
     </div>

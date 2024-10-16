@@ -33,7 +33,7 @@ export default function SubscribePage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Subscription Page</h1>
+      <p className="text-2xl font-bold mb-4">Payment Page</p>
       <p className="mb-4">{message}</p>
       {!session ? (
         <Link href="/api/auth/signin" className="text-blue-500 hover:underline">

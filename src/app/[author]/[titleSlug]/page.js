@@ -114,7 +114,7 @@ export default function ArticlePage({ params }) {
       <div className="container mx-auto p-4">
         <Header />
         <main>
-          <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+          <h2 className="text-3xl font-bold mb-4">{article.title}</h2>
           <div className="border p-4 rounded-lg">
             <p>This is a premium article. Please subscribe to read the full content.</p>
              <SubscribeButton articleUrl={pathname} />
@@ -131,7 +131,7 @@ export default function ArticlePage({ params }) {
     <div className="container mx-auto p-4">
       <Header />
       <main>
-        <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+        <h2 className="text-3xl font-bold mb-4">{article.title}</h2>
         <div className="border p-4 rounded-lg">
           <div className="mt-4" dangerouslySetInnerHTML={{ __html: processContent(article.content) }}></div>
           <Link href={article.url} target="_blank" rel="noopener noreferrer nofollow" className="text-blue-500 hover:underline">

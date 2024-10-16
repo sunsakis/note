@@ -70,7 +70,7 @@ export default function SubscriptionSuccess() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Subscription Status</h1>
+      <p className="text-2xl font-bold mb-4">Payment Status</p>
       <p className="mb-4">{message}</p>
       <Link href="/" className="text-blue-500 hover:underline">
         Return to Homepage
