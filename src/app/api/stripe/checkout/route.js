@@ -33,7 +33,7 @@ export async function POST(req) {
           quantity: 1,
         },
       ],
-      mode: 'subscription',
+      mode: 'payment',
       success_url: `${process.env.NEXTAUTH_URL}/success?session_id={CHECKOUT_SESSION_ID}&article_url=${encodeURIComponent(articleUrl)}`,
       cancel_url: `${process.env.NEXTAUTH_URL}${articleUrl}`,
       client_reference_id: session.user.id,
