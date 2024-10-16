@@ -6,6 +6,10 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(req) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('STRIPE_SECRET_KEY is not set');
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  }
   const session = await getServerSession(authOptions);
   const { articleUrl } = await req.json();  // Get the article URL from the request body
 
