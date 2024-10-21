@@ -67,12 +67,12 @@ export default function Header() {
             onClick={toggleDropdown}
             className="text-white rounded hover:text-blue-600 underline font-bold"
           >
-            best news ▼
+            newsletters ▼
           </button>
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+            <div className="absolute right-0 mt-2 w-12 bg-white rounded-md shadow-lg z-10">
               <Link href="/best-vc-newsletters" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  VC Newsletters
+                  VC
               </Link>
               {/* Add more dropdown items here */}
               {/* <Link href="/another-resource" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
