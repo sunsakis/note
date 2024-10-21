@@ -4,31 +4,15 @@ import { generateSummary } from '@/lib/summarize';
 import Parser from 'rss-parser';
 import * as cheerio from 'cheerio';
 import { slugify } from '@/lib/slugify';
-
-const FEED_URLS = [
-  'https://ideas.everywhere.vc/feed',
-  'https://thevccorner.substack.com/feed',
-  'https://babyvc.substack.com/feed',
-  'https://www.newsletter.datadrivenvc.io/feed',
-  'https://parsers.substack.com/feed',
-  'https://stellifivc.substack.com/feed',
-  'https://www.eu.vc/feed',
-  'https://www.theconsumervc.com/feed',
-  'https://avilavc.substack.com/feed',
-  'https://theventurecrew.substack.com/feed',
-  'https://shrutigandhi.substack.com/feed',
-  'https://unshackledvc.substack.com/feed',
-  'https://thefoundingjourney.substack.com/feed',
-  'https://akashbajwa.substack.com/feed',
-  'https://ventureunlocked.substack.com/feed',
-  'https://grounded.substack.com/feed',
-  'https://nextgenvc.substack.com/feed',
-  'https://newsletter.mcj.vc/feed',
-  'https://thegeneralist.substack.com/feed'
-];
+import { VC, EN } from '@/lib/feeds';
 
 const CUTOFF_DATE = new Date('2024-10-01');
 const parser = new Parser();
+
+const feedCategories = {
+  vc: VC,
+  english: EN
+}
 
 function extractSlugFromUrl(url) {
   const parts = url.split('/');
@@ -40,23 +24,25 @@ function extractSlugFromUrl(url) {
 async function fetchAndUpdateRSSFeeds() {
   try {
     let newArticlesCount = 0;
-    for (const feedUrl of FEED_URLS) {
-      const feed = await parser.parseURL(feedUrl);
-      
-      for (const item of feed.items) {
-        const publishedAt = new Date(item.pubDate);
+    for (const [category, feeds] of Object.entries(feedCategories)) {
+      for (const feedUrl of feeds) {
+        const feed = await parser.parseURL(feedUrl);
         
-        if (publishedAt >= CUTOFF_DATE) {
-          console.log('--- New Item ---');
-          console.log('Title:', item.title);
-          console.log('Link:', item.link);
-          console.log('Creator:', item.creator);
-          console.log('Published:', publishedAt);
-          const existingArticle = await prisma.article.findUnique({
-            where: { url: item.link }
-          });
+        for (const item of feed.items) {
+          const publishedAt = new Date(item.pubDate);
+          
+          if (publishedAt >= CUTOFF_DATE) {
+            console.log('--- New Item ---');
+            console.log('Title:', item.title);
+            console.log('Link:', item.link);
+            console.log('Creator:', item.creator);
+            console.log('Published:', publishedAt);
+            console.log('Category:', category);
+            const existingArticle = await prisma.article.findUnique({
+              where: { url: item.link }
+            });
 
-          if (!existingArticle) {
+            if (!existingArticle) {
             // Determine the full content
             let fullContent = item['content:encoded'] || item.content;
             // Remove subscription widget
@@ -78,7 +64,7 @@ async function fetchAndUpdateRSSFeeds() {
                 description: item.contentSnippet || item.description,
                 content: fullContent,
                 publishedAt: publishedAt,
-                tags: [...(item.categories ?? []), 'vc'],
+                tags: [...(item.categories ?? []), category],
                 imageUrl: item.enclosure?.url || null,
                 author: author || 'anon',
                 titleSlug: extractSlugFromUrl(item.link),
@@ -94,7 +80,8 @@ async function fetchAndUpdateRSSFeeds() {
               data: { summary }
             });
 
-            newArticlesCount++;
+              newArticlesCount++;
+            }
           }
         }
       }
@@ -110,10 +97,11 @@ async function refetchAndUpdateAllArticles() {
   try {
     let updatedArticlesCount = 0;
     
-    for (const feedUrl of FEED_URLS) {
-      const feed = await parser.parseURL(feedUrl);
-      
-      for (const item of feed.items) {
+    for (const [category, feeds] of Object.entries(feedCategories)) {
+      for (const feedUrl of feeds) {
+        const feed = await parser.parseURL(feedUrl);
+        
+        for (const item of feed.items) {
         const existingArticle = await prisma.article.findUnique({
           where: { url: item.link }
         });
@@ -129,15 +117,15 @@ async function refetchAndUpdateAllArticles() {
               fullContent = $.html();
           }
           
-          if (fullContent && item.tags == 'vc' && fullContent !== existingArticle.content || item.enclosure?.url !== existingArticle.imageUrl || item.titleSlug == null) {
-              let titleSlug = slugify(item.title);
-              let author = item.author || item.creator || item['dc:creator'] || item.copyright || existingArticle.author;
+          if (fullContent && fullContent !== existingArticle.content || item.enclosure?.url !== existingArticle.imageUrl || item.titleSlug == null) {
+            let titleSlug = slugify(item.title);
+            let author = item.author || item.creator || item['dc:creator'] || item.copyright || existingArticle.author;
             await prisma.article.update({
               where: { id: existingArticle.id },
               data: {
                 content: fullContent,
                 description: item.contentSnippet || item.description,
-                tags: ['vc'],
+                tags: [category],
                 imageUrl: item.enclosure?.url || null,
                 author: author,
                 titleSlug: titleSlug,
@@ -146,6 +134,7 @@ async function refetchAndUpdateAllArticles() {
             updatedArticlesCount++;
             const updatedArticle = await prisma.article.findUnique({ where: { id: existingArticle.id } });
               console.log('Updated author:', updatedArticle.author);
+            }
           }
         }
       }

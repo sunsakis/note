@@ -7,6 +7,7 @@ import { loadStripe } from '@stripe/stripe-js';
 export default function Header() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -49,6 +50,10 @@ export default function Header() {
     }
   };
 
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mt-5">
@@ -57,42 +62,37 @@ export default function Header() {
             Note
           </Link>
         </p>
-        {/* <Link href="/lietuviskai">
-          <Image src="/lithuania_flag.svg" alt="Lietuvos herbas" width={25} height={25} className="m-1 mt-0"/>
-        </Link> */}
-          {/* <button onClick={handleCheckout}>
-            <Image 
-              src="/coffee.png" 
-              alt="Front of a $1 dollar coin with Lady Liberty holding the Torch of Freedom up high." 
-              width={65} 
-              height={65} 
-              className="m-3 mt-0 cursor-pointer"
-            />
-          </button> */}
-          <Link href="/best-vc-newsletters">
-            <button className="text-white rounded hover:text-blue-600 underline">
-              <p className=" font-bold">Best VC Newsletters</p>
-            </button>
-          </Link>
+        <div className="relative">
+          <button 
+            onClick={toggleDropdown}
+            className="text-white rounded hover:text-blue-600 underline font-bold"
+          >
+            best news ▼
+          </button>
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+              <Link href="/best-vc-newsletters" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  VC Newsletters
+              </Link>
+              {/* Add more dropdown items here */}
+              {/* <Link href="/another-resource" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Another Resource
+              </Link> */}
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex-grow flex justify-center mb-5">
-          <button onClick={handleCheckout}>
-            <Image 
-              src="/coffee.png" 
-              alt="Front of a $1 dollar coin with Lady Liberty holding the Torch of Freedom up high." 
-              width={65} 
-              height={65} 
-              className="m-3 mt-0 cursor-pointer"
-            />
-          </button>
+        <button onClick={handleCheckout}>
+          <Image 
+            src="/coffee.png" 
+            alt="Front of a $1 dollar coin with Lady Liberty holding the Torch of Freedom up high." 
+            width={65} 
+            height={65} 
+            className="m-3 mt-0 cursor-pointer"
+          />
+        </button>
       </div>
-      {/* <div className="flex-grow flex justify-center m-3 mb-5">
-          <Link href="/best-vc-newsletters">
-            <button className="text-white rounded hover:text-blue-600 underline">
-              <p className=" font-bold">Best VC Newsletters</p>
-            </button>
-          </Link>
-      </div> */}
     </>
   );
 }
