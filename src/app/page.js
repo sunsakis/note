@@ -35,7 +35,7 @@ export default function Home() {
   const fetchArticles = useCallback(async (pageNumber) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/rss/lt?page=${pageNumber}&tag=english`);
+      const response = await fetch(`/api/rss/en?page=${pageNumber}&tag=english`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
