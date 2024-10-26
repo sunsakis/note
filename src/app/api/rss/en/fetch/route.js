@@ -48,7 +48,7 @@ async function fetchAndUpdateRSSFeeds() {
                 fullContent = $.html();
               }
 
-              let author = item.author || item.creator || item['dc:creator'] || item.copyright || null;
+              let author = item.author || item.creator || item['dc:creator'] || item.copyright || 'anon';
               console.log('Extracted author:', author);
               
               
@@ -111,7 +111,7 @@ async function refetchAndUpdateAllArticles() {
             
             if (fullContent && item.tags == 'english' && fullContent !== existingArticle.content || item.enclosure?.url !== existingArticle.imageUrl || item.titleSlug == null) {
                 let titleSlug = slugify(item.title);
-                let author = item.author || item.creator || item['dc:creator'] || item.copyright || existingArticle.author;
+                let author = item.author || item.creator || item['dc:creator'] || item.copyright || existingArticle.author || 'anon';
               await prisma.article.update({
                 where: { id: existingArticle.id },
                 data: {

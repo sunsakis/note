@@ -10,7 +10,6 @@ const FEED_URLS = [
   'https://gustestulpin.substack.com/feed',
   'https://domasraibys.substack.com/feed',
   'https://malonumui.substack.com/feed',
-  'https://laurinavicius.substack.com/feed',
 ];
 
 const CUTOFF_DATE = new Date('2024-10-07');

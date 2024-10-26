@@ -11,28 +11,34 @@ export async function GET(request) {
       const page = parseInt(searchParams.get('page') || '1', 10);
       const pageSize = ARTICLES_PER_PAGE;
 
-      // Count total articles
-      const totalArticles = await prisma.article.count({
-          where: {
-              publishedAt: {
-                  gte: CUTOFF_DATE
-              }
-          }
-      });
-
-      // Load articles directly from the database
-      const articles = await prisma.article.findMany({
-          skip: (page - 1) * pageSize,
-          take: pageSize,
-          orderBy: {
-              publishedAt: 'desc'
-          },
-          where: {
-              publishedAt: {
-                  gte: CUTOFF_DATE
-              }
-          }
-      });
+    // Count total articles with the 'lithuanian' tag
+    const totalArticles = await prisma.article.count({
+        where: {
+        tags: {
+            has: 'lithuanian'
+        },
+        publishedAt: {
+            gte: CUTOFF_DATE
+        }
+        }
+    });
+    
+    // Load articles with the 'lithuanian' tag
+    const articles = await prisma.article.findMany({
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        orderBy: {
+        publishedAt: 'desc'
+        },
+        where: {
+        tags: {
+            has: 'lithuanian'
+        },
+        publishedAt: {
+            gte: CUTOFF_DATE
+        }
+        }
+    });
 
       const hasMore = totalArticles > page * pageSize;
 
