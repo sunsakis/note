@@ -34,9 +34,14 @@ lithuanian: [
 ai: [
   'https://www.usermag.co/feed',
   'https://fintechbusinessweekly.substack.com/feed',
-  'https://brief.bismarckanalysis.com/feed',
   'https://chamath.substack.com/feed',
   'https://blog.bytebytego.com/feed',
+  'https://fintechbusinessweekly.substack.com/feed',
+  'https://www.understandingai.org/feed',
+  'https://kyla.substack.com/feed',
+  'https://theconvivialsociety.substack.com/feed',
+  'https://importai.substack.com/feed',
+  'https://www.bigtechnology.com/feed',
 ]
 
 };
