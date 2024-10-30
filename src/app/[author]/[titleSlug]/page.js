@@ -106,7 +106,7 @@ export default function ArticlePage({ params }) {
   const returnUrl = getReturnUrl(article.tags.includes('lithuanian') ? 'lithuanian' : 'english');
 
   // Check if the article is premium and user is not subscribed
-  const isPremiumContent = article.tags.includes('vc');
+  const isPremiumContent = article.tags.includes('vc') || article.tags.includes('ai');
   const isUserSubscribed = session?.user?.isPremium;
 
   if (isPremiumContent && !isUserSubscribed) {

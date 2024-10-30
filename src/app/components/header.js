@@ -70,14 +70,13 @@ export default function Header() {
             newsletters ▼
           </button>
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-12 bg-white rounded-md shadow-lg z-10">
-              <Link href="/best-vc-newsletters" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  VC
+            <div className="absolute right-0 mt-2 w-20 bg-white rounded-md shadow-lg z-10">
+              <Link href="/finance" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Finance
               </Link>
-              {/* Add more dropdown items here */}
-              {/* <Link href="/another-resource" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Another Resource
-              </Link> */}
+              <Link href="/tech" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Tech
+              </Link>
             </div>
           )}
         </div>

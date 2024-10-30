@@ -1,4 +1,6 @@
-export const VC = [
+export const feeds = {
+
+vc: [
   'https://babyvc.substack.com/feed',
   'https://parsers.substack.com/feed',
   'https://stellifivc.substack.com/feed',
@@ -10,22 +12,34 @@ export const VC = [
   'https://nextgenvc.substack.com/feed',
   'https://newsletter.mcj.vc/feed',
   'https://thegeneralist.substack.com/feed'
-];
+],
 
-export const EN = [
+english: [
   'https://timdenning.substack.com/feed',
   'https://niallharbison.substack.com/feed',
   'https://ravenewworld.substack.com/feed',
   'https://thegeneralist.substack.com/feed',
   'https://www.oneusefulthing.org/feed',   
   'https://newsletter.mcj.vc/feed',
-];
+],
 
-export const LT = [
+lithuanian: [
   'https://vartotojogidas.substack.com/feed',
   'https://emilijaviso.substack.com/feed',
   'https://gustestulpin.substack.com/feed',
   'https://domasraibys.substack.com/feed',
   'https://malonumui.substack.com/feed',
-  'https://laurinavicius.substack.com/feed',
-];
+],
+
+ai: [
+  'https://www.kevinrose.com/feed',
+  'https://www.usermag.co/feed',
+  'https://fintechbusinessweekly.substack.com/feed',
+  'https://tidyfirst.substack.com/feed',
+  'https://brief.bismarckanalysis.com/feed',
+  'https://www.newcomer.co/feed',
+  'https://chamath.substack.com/feed',
+  'https://blog.bytebytego.com/feed',
+]
+
+};

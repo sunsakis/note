@@ -4,15 +4,10 @@ import { generateSummary } from '@/lib/summarize';
 import Parser from 'rss-parser';
 import * as cheerio from 'cheerio';
 import { slugify } from '@/lib/slugify';
-import { VC, EN } from '@/lib/feeds';
+import { feeds } from '@/lib/feeds';
 
-const CUTOFF_DATE = new Date('2024-10-01');
+const CUTOFF_DATE = new Date('2024-10-26');
 const parser = new Parser();
-
-const feedCategories = {
-  vc: VC,
-  english: EN
-}
 
 function extractSlugFromUrl(url) {
   const parts = url.split('/');
@@ -24,8 +19,8 @@ function extractSlugFromUrl(url) {
 async function fetchAndUpdateRSSFeeds() {
   try {
     let newArticlesCount = 0;
-    for (const [category, feeds] of Object.entries(feedCategories)) {
-      for (const feedUrl of feeds) {
+    for (const [category, categoryFeeds] of Object.entries(feeds)) {
+      for (const feedUrl of categoryFeeds) {
         const feed = await parser.parseURL(feedUrl);
         
         for (const item of feed.items) {
