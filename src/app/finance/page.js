@@ -102,8 +102,8 @@ export default function Home() {
             </div>
           </div>
         ))}
-        {isLoading && <div>Loading more articles...</div>}
-        {!hasMore && <div>No more articles to load.</div>}
+        {isLoading && <div>Loading more newsletters...</div>}
+        {!hasMore && <div>No more newsletters to load.</div>}
       </main>
         <Footer />
     </div>

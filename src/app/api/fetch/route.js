@@ -6,7 +6,7 @@ import * as cheerio from 'cheerio';
 import { slugify } from '@/lib/slugify';
 import { feeds } from '@/lib/feeds';
 
-const CUTOFF_DATE = new Date('2024-10-26');
+const CUTOFF_DATE = new Date('2024-10-20');
 const parser = new Parser();
 
 function extractSlugFromUrl(url) {

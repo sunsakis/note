@@ -32,12 +32,9 @@ lithuanian: [
 ],
 
 ai: [
-  'https://www.kevinrose.com/feed',
   'https://www.usermag.co/feed',
   'https://fintechbusinessweekly.substack.com/feed',
-  'https://tidyfirst.substack.com/feed',
   'https://brief.bismarckanalysis.com/feed',
-  'https://www.newcomer.co/feed',
   'https://chamath.substack.com/feed',
   'https://blog.bytebytego.com/feed',
 ]

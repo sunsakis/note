@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['substackcdn.com', 'api.substack.com', 'substack-post-media.s3.amazonaws.com', 'chrt.fm'],
+    domains: ['substackcdn.com', 'api.substack.com', 'substack-post-media.s3.amazonaws.com', 'chrt.fm', 'lh7-rt.googleusercontent.com'],
   },
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,

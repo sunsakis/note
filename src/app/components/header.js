@@ -3,11 +3,13 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
+import { useSession } from 'next-auth/react'; // Add this import
 
 export default function Header() {
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { data: session, status } = useSession(); // Add this line
 
   useEffect(() => {
     setIsClient(true);
@@ -16,6 +18,12 @@ export default function Header() {
   const handleCheckout = async (e) => {
     e.preventDefault();
     if (isClient) {
+      if (status === 'unauthenticated') {
+        // Redirect to login page if user is not authenticated
+        router.push('/api/auth/signin?callbackUrl=' + encodeURIComponent(window.location.pathname));
+        return;
+      }
+
       try {
         const response = await fetch('/api/stripe/checkout', {
           method: 'POST',
