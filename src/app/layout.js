@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Heavily Curated Newsletter Selection - Note",
+  title: "Heavily Curated Newsletters - Note",
   description: "Get the gist of the latest ideas as understood by smart people.",
 };
 
