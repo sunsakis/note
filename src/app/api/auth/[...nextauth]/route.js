@@ -14,7 +14,7 @@ export const authOptions = {
   callbacks: {
     async session({ session, user }) {
       session.user.id = user.id;
-      session.user.credits = user.credits; // Replace isPremium with credits
+      session.user.credits = user.credits;
       return session;
     },
   },
