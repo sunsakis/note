@@ -61,7 +61,7 @@ export default function SubscribeButton({ articleUrl }) {
         className="mt-4 inline-block text-blue-500 hover:underline"
         disabled={isLoading}
       >
-        {isLoading ? 'Processing...' : session ? 'Pay Now' : 'Sign In'}
+        {isLoading ? 'Processing...' : session ? 'Pre-Pay Now' : 'Sign In'}
       </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>

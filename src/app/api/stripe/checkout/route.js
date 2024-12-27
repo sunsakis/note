@@ -7,7 +7,7 @@ let stripe;
 
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2024-09-30.acacia', // Use the latest API version
+    apiVersion: '2024-09-30.acacia', 
   });
 } else {
   console.error('STRIPE_SECRET_KEY is not set');
