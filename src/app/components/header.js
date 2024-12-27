@@ -75,7 +75,7 @@ export default function Header() {
             onClick={toggleDropdown}
             className="text-white rounded hover:text-blue-600 underline font-bold"
           >
-            newsletters ▼
+            topics ▼
           </button>
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-20 bg-white rounded-md shadow-lg z-10">

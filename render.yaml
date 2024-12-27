@@ -1,0 +1,7 @@
+services:
+  - type: cron
+    name: fetch-articles
+    env: node
+    schedule: 0 0 * * *  # Runs at midnight UTC every day
+    buildCommand: npm install
+    startCommand: curl -X GET https://note.live/api/fetch

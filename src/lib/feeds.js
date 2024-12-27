@@ -3,7 +3,6 @@ export const feeds = {
 vc: [
   'https://babyvc.substack.com/feed',
   'https://parsers.substack.com/feed',
-  'https://stellifivc.substack.com/feed',
   'https://avilavc.substack.com/feed',
   'https://theventurecrew.substack.com/feed',
   'https://shrutigandhi.substack.com/feed',
@@ -14,22 +13,22 @@ vc: [
   'https://thegeneralist.substack.com/feed'
 ],
 
-english: [
-  'https://timdenning.substack.com/feed',
-  'https://niallharbison.substack.com/feed',
-  'https://ravenewworld.substack.com/feed',
-  'https://thegeneralist.substack.com/feed',
-  'https://www.oneusefulthing.org/feed',   
-  'https://newsletter.mcj.vc/feed',
-],
+// english: [
+//   'https://timdenning.substack.com/feed',
+//   'https://niallharbison.substack.com/feed',
+//   'https://ravenewworld.substack.com/feed',
+//   'https://thegeneralist.substack.com/feed',
+//   'https://www.oneusefulthing.org/feed',   
+//   'https://newsletter.mcj.vc/feed',
+// ],
 
-lithuanian: [
-  'https://vartotojogidas.substack.com/feed',
-  'https://emilijaviso.substack.com/feed',
-  'https://gustestulpin.substack.com/feed',
-  'https://domasraibys.substack.com/feed',
-  'https://malonumui.substack.com/feed',
-],
+// lithuanian: [
+//   'https://vartotojogidas.substack.com/feed',
+//   'https://emilijaviso.substack.com/feed',
+//   'https://gustestulpin.substack.com/feed',
+//   'https://domasraibys.substack.com/feed',
+//   'https://malonumui.substack.com/feed',
+// ],
 
 ai: [
   'https://www.usermag.co/feed',

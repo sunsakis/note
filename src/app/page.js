@@ -35,7 +35,7 @@ export default function Home() {
   const fetchArticles = useCallback(async (pageNumber) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/rss/en?page=${pageNumber}&tag=english`);
+      const response = await fetch(`/api/rss/en?page=${pageNumber}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -46,7 +46,6 @@ export default function Home() {
         const combinedArticles = [...prevArticles, ...newArticles];
         const uniqueArticles = Array.from(new Set(combinedArticles.map(a => a.id)))
           .map(id => combinedArticles.find(a => a.id === id))
-          .filter(article => article.tags && article.tags.includes('english'));
         uniqueArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
         return uniqueArticles;
       });
