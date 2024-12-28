@@ -65,11 +65,7 @@ export default function Header() {
   return (
     <>
       <div className="flex justify-between items-center mt-5">
-        <p className="text-3xl font-bold m-1 mb-2 mt-0">
-          <Link href="/">
-            Note
-          </Link>
-        </p>
+          <Image src="/logo.svg" alt="Note Logo" width={85} height={85} className="m-3 mt-0 cursor-pointer" />
         <div className="relative">
           <button 
             onClick={toggleDropdown}
