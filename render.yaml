@@ -4,7 +4,6 @@ services:
     env: node
     buildCommand: npm install
     startCommand: node src/feed-fetcher/index.js
-    private: true
     envVars:
       - key: DATABASE_URL
         fromDatabase:
