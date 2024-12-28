@@ -2,6 +2,7 @@ services:
   - type: web
     name: feed-fetcher
     env: node
+    plan: free
     region: virginia
     buildCommand: npm install && npx prisma generate
     startCommand: node src/feed-fetcher/index.js
@@ -10,8 +11,9 @@ services:
         fromDatabase:
           name: note
           property: connectionString
-      - key: PORT
+        key: PORT
         value: 3000
+        fromGroup: note-env
 
   - type: cron
     name: fetch-articles
