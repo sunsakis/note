@@ -15,6 +15,6 @@ services:
     env: node
     schedule: 0 0 * * *
     buildCommand: npm install
-    startCommand: curl -X POST https://api.render.com/v1/services/YOUR_SERVICE_ID/jobs -H "Authorization: Bearer $RENDER_API_KEY"
+    startCommand: "curl -X POST https://api.render.com/v1/services/YOUR_SERVICE_ID/jobs -H 'Authorization: Bearer $RENDER_API_KEY'"
     envVars:
       - fromGroup: note-env
