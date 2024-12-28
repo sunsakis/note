@@ -3,7 +3,6 @@ export const feeds = {
 vc: [
   'https://babyvc.substack.com/feed',
   'https://avilavc.substack.com/feed',
-  'https://theventurecrew.substack.com/feed',
   'https://shrutigandhi.substack.com/feed',
   'https://akashbajwa.substack.com/feed',
   'https://grounded.substack.com/feed',
