@@ -1,9 +1,9 @@
-import { prisma } from '@/lib/prisma';
-import { generateSummary } from '@/lib/summarize';
+import { prisma } from '../lib/prisma.js';
+import { generateSummary } from '../lib/summarize.js';
 import Parser from 'rss-parser';
 import * as cheerio from 'cheerio';
-import { slugify } from '@/lib/slugify';
-import { feeds } from '@/lib/feeds';
+import { slugify } from '../lib/slugify.js';
+import { feeds } from '../lib/feeds.js';
 
 const CUTOFF_DATE = new Date('2024-10-20');
 const parser = new Parser();
