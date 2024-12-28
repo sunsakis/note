@@ -1,3 +1,4 @@
+import express from 'express';
 import { prisma } from '../lib/prisma.js';
 import { generateSummary } from '../lib/summarize.js';
 import Parser from 'rss-parser';
@@ -5,6 +6,8 @@ import * as cheerio from 'cheerio';
 import { slugify } from '../lib/slugify.js';
 import { feeds } from '../lib/feeds.js';
 
+const app = express();
+const port = process.env.PORT || 3000;
 const CUTOFF_DATE = new Date('2024-10-20');
 const parser = new Parser();
 
@@ -37,9 +40,7 @@ async function fetchAndUpdateRSSFeeds() {
             });
 
             if (!existingArticle) {
-              // Determine the full content
               let fullContent = item['content:encoded'] || item.content;
-              // Remove subscription widget
               if (fullContent) {
                 const $ = cheerio.load(fullContent);
                 $('.subscription-widget-wrap-editor').remove();
@@ -66,7 +67,6 @@ async function fetchAndUpdateRSSFeeds() {
 
               console.log(`Author saved in DB: ${newArticle.author}`);
 
-              // Generate summary for the new article
               const summary = await generateSummary(fullContent);
               await prisma.article.update({
                 where: { id: newArticle.id },
@@ -100,9 +100,7 @@ async function refetchAndUpdateAllArticles() {
           });
 
           if (existingArticle) {
-            // Determine the full content
             let fullContent = item['content:encoded'] || item.content;
-            // Remove subscription widget
             if (fullContent) {
               const $ = cheerio.load(fullContent);
               $('.subscription-widget-wrap-editor').remove();
@@ -150,13 +148,21 @@ async function main() {
     console.log(`Successfully refreshed articles. Updated ${updatedArticlesCount} articles.`);
     
     await prisma.$disconnect();
-    process.exit(0);
   } catch (error) {
     console.error('Error in main process:', error);
     await prisma.$disconnect();
-    process.exit(1);
+    throw error;
   }
 }
 
-// Run the script
-main();
+// Add basic endpoint for health check
+app.get('/', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Feed fetcher service listening on port ${port}`);
+  // Run feed fetch on startup
+  main().catch(console.error);
+});
