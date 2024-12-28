@@ -161,7 +161,9 @@ export default function ArticlePage({ params }) {
         <main>
           <h2 className="text-3xl font-bold mb-4">{article.title}</h2>
           <div className="border p-4 rounded-lg">
-            <p>Note runs on micropayments, reading one full article eats up one full credit.</p>
+            <p>Note is built on micropayments. Reading articles consumes credit.</p>
+            <br/>
+            <p>Only pay for as much as you read. Subscriptions can go to hell.</p>
             <SubscribeButton articleUrl={pathname} />
           </div>
           <Link href={returnUrl} className="mt-4 inline-block text-blue-500 hover:underline">

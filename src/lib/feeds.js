@@ -13,14 +13,14 @@ vc: [
   'https://thegeneralist.substack.com/feed'
 ],
 
-// english: [
-//   'https://timdenning.substack.com/feed',
-//   'https://niallharbison.substack.com/feed',
-//   'https://ravenewworld.substack.com/feed',
-//   'https://thegeneralist.substack.com/feed',
-//   'https://www.oneusefulthing.org/feed',   
-//   'https://newsletter.mcj.vc/feed',
-// ],
+english: [
+  'https://timdenning.substack.com/feed',
+  'https://niallharbison.substack.com/feed',
+  'https://ravenewworld.substack.com/feed',
+  'https://thegeneralist.substack.com/feed',
+  'https://www.oneusefulthing.org/feed',   
+  'https://newsletter.mcj.vc/feed',
+],
 
 // lithuanian: [
 //   'https://vartotojogidas.substack.com/feed',
