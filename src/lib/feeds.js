@@ -40,7 +40,6 @@ ai: [
   'https://kyla.substack.com/feed',
   'https://theconvivialsociety.substack.com/feed',
   'https://importai.substack.com/feed',
-  'https://www.bigtechnology.com/feed',
 ]
 
 };
