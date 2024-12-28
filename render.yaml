@@ -1,9 +1,10 @@
 services:
-  - type: private
+  - type: web
     name: feed-fetcher
     env: node
     buildCommand: npm install
     startCommand: node src/feed-fetcher/index.js
+    private: true
     envVars:
       - key: DATABASE_URL
         fromDatabase:
