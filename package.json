@@ -2,13 +2,15 @@
   "name": "note",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "vercel-build": "node vercel-build.js && next build",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "prisma:reset": "rm -rf node_modules/.prisma && npx prisma generate"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.3",
