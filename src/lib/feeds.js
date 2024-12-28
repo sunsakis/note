@@ -32,6 +32,7 @@ english: [
 
 ai: [
   'https://fintechbusinessweekly.substack.com/feed',
+  'https://interlinked.substack.com/feed',
   'https://chamath.substack.com/feed',
   'https://blog.bytebytego.com/feed',
   'https://fintechbusinessweekly.substack.com/feed',
