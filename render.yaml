@@ -2,14 +2,10 @@ services:
   - type: web
     name: feed-fetcher
     env: node
-    plan: free
+    plan: starter
     region: virginia
-    buildCommand: |
-      npm install
-      npm run prisma:reset
-    startCommand: |
-      echo "DATABASE_URL: $DATABASE_URL"
-      node src/feed-fetcher/index.js
+    buildCommand: npm install && npx prisma generate
+    startCommand: node src/feed-fetcher/index.js
     envVars:
       - key: DATABASE_URL
         fromDatabase:
