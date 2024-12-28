@@ -14,7 +14,7 @@ export async function GET(request) {
     const totalArticles = await prisma.article.count({
         where: {
         tags: {
-            has: 'english'
+            hasSome: ['ai']
         },
         publishedAt: {
             gte: CUTOFF_DATE
@@ -30,7 +30,7 @@ export async function GET(request) {
         },
         where: {
         tags: {
-            has: 'english'
+            hasSome: ['ai']
         },
         publishedAt: {
             gte: CUTOFF_DATE

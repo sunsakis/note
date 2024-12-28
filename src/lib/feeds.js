@@ -31,7 +31,6 @@ vc: [
 // ],
 
 ai: [
-  'https://www.usermag.co/feed',
   'https://fintechbusinessweekly.substack.com/feed',
   'https://chamath.substack.com/feed',
   'https://blog.bytebytego.com/feed',
