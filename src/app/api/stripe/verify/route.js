@@ -1,7 +1,6 @@
-// src/app/api/stripe/verify/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth" 
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
 
