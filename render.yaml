@@ -5,7 +5,7 @@ services:
     plan: starter
     region: virginia
     buildCommand: npm install && npx prisma generate
-    startCommand: node src/feed-fetcher/index.js
+    startCommand: node src/feed-fetcher/index.mjs
     envVars:
       - key: DATABASE_URL
         fromDatabase:
