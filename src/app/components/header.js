@@ -1,71 +1,46 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { loadStripe } from '@stripe/stripe-js';
-import { useSession } from 'next-auth/react'; // Add this import
+import { useState } from 'react';
 
 export default function Header() {
-  const router = useRouter();
-  const [isClient, setIsClient] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { data: session, status } = useSession(); // Add this line
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const handleCheckout = async (e) => {
-    e.preventDefault();
-    if (isClient) {
-      if (status === 'unauthenticated') {
-        // Redirect to login page if user is not authenticated
-        router.push('/api/auth/signin?callbackUrl=' + encodeURIComponent(window.location.pathname));
-        return;
-      }
-
-      try {
-        const response = await fetch('/api/stripe/checkout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ articleUrl: window.location.pathname }),
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Full response data:', data);
-        
-        if (data.sessionId) {
-          // Redirect to Stripe Checkout
-          const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-          const result = await stripe.redirectToCheckout({
-            sessionId: data.sessionId,
-          });
-          if (result.error) {
-            console.error('Stripe redirect error:', result.error);
-          }
-        } else {
-          console.error('No sessionId in the response');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-  };
+  const [email, setEmail] = useState('');
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/maillist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setEmail('');
+        alert(data.message);
+      } else {
+        alert(data.error || data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Something went wrong. Please try again.');
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mt-5">
+        <Link href="/" className="flex items-center">
           <Image src="/logo.svg" alt="Note Logo" width={85} height={85} className="m-3 mt-0 cursor-pointer" />
+        </Link>
         <div className="relative">
           <button 
             onClick={toggleDropdown}
@@ -76,28 +51,32 @@ export default function Header() {
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-20 bg-white rounded-md shadow-lg z-10">
               <Link href="/culture" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Culture
+                Culture
               </Link>
               <Link href="/finance" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Finance
+                Finance
               </Link>
               <Link href="/tech" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Tech
+                Tech
               </Link>
             </div>
           )}
         </div>
       </div>
-      <div className="flex-grow flex justify-center mb-5">
-        <button onClick={handleCheckout}>
-          <Image 
-            src="/coffee.png" 
-            alt="Front of a $1 dollar coin with Lady Liberty holding the Torch of Freedom up high." 
-            width={65} 
-            height={65} 
-            className="m-3 mt-0 cursor-pointer"
+      <div className="flex-grow flex justify-center items-center mb-5 mt-3">
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            className="px-3 py-1 rounded border text-sm text-gray-600"
+            required
           />
-        </button>
+          <button type="submit" className="text-blue-500 hover:text-blue-800">
+            Subscribe
+          </button>
+        </form>
       </div>
     </>
   );

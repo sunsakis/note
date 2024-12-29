@@ -19,7 +19,7 @@ services:
     name: fetch-articles
     env: node
     region: virginia
-    schedule: 0 0 * * *
+    schedule: 0 8 * * *
     buildCommand: npm install
     startCommand: "curl -X POST feed-fetcher:3000 -H 'Authorization: Bearer $RENDER_API_KEY'"
     envVars:
