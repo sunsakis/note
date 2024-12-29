@@ -50,11 +50,11 @@ export default function Header() {
           </button>
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-20 bg-white rounded-md shadow-lg z-10">
+              <Link href="/capital" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                Capital
+              </Link>
               <Link href="/culture" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 Culture
-              </Link>
-              <Link href="/finance" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                Finance
               </Link>
               <Link href="/tech" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 Tech
