@@ -163,7 +163,7 @@ export default function ArticlePage({ params }) {
           <div className="border p-4 rounded-lg">
             <p>Note is built on micropayments. Reading an article consumes a credit.</p>
             <br/>
-            <p>{session ? "Only pay for as much as you read." : "Sign up to get free credits."}</p>
+            <p>{session ? "Only pay for as much as you read." : "New readers get free credits."}</p>
             <SubscribeButton articleUrl={pathname} />
           </div>
           <Link href={returnUrl} className="mt-4 inline-block text-blue-500 hover:underline">
