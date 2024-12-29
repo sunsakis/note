@@ -21,6 +21,6 @@ services:
     region: virginia
     schedule: 0 0 * * *
     buildCommand: npm install
-    startCommand: "curl -X POST https://YOUR_SERVICE_URL/fetch -H 'Authorization: Bearer $RENDER_API_KEY'"
+    startCommand: "curl -X POST feed-fetcher:3000 -H 'Authorization: Bearer $RENDER_API_KEY'"
     envVars:
       - fromGroup: note-env
