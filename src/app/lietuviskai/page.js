@@ -100,7 +100,18 @@ export default function Home() {
             </div>
           </div>
         ))}
-        {isLoading && <div>Loading more newsletters...</div>}
+        {isLoading && (
+          <div className="border p-4 rounded-lg mb-4 flex animate-pulse">
+            <div className="float-left sm:float-none mb-2 sm:mb-0 mr-4 w-24 h-28 flex-shrink-0 bg-gray-200 rounded"></div>
+            <div className="w-full">
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/4 mt-4"></div>
+            </div>
+          </div>
+        )}
         {!hasMore && <div>No more newsletters to load.</div>}
       </main>
       <footer className="mt-8 text-center text-gray-500">
