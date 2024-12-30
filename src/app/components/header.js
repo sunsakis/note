@@ -64,6 +64,8 @@ export default function Header() {
         </div>
       </div>
       <div className="flex-grow flex justify-center items-center mb-5 mt-3">
+        {/* <Image src="/message.svg" alt="Note Logo" width={25} height={25} className="m-3 mr-5 cursor-pointer" /> */}
+        <a href="mailto:news@note.live" className="mr-10 mx-3 text-xs underline text-gray-300">news@note.live</a>
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="email"
@@ -73,8 +75,8 @@ export default function Header() {
             className="px-3 py-1 rounded border text-sm text-gray-600"
             required
           />
-          <button type="submit" className="text-blue-500 hover:text-blue-800">
-            Subscribe
+          <button type="submit" className="text-white hover:text-blue-800">
+            <span className="rotate-180">▶</span>
           </button>
         </form>
       </div>
