@@ -39,7 +39,7 @@ export default function Header() {
     <>
       <div className="flex justify-between items-center mt-5">
         <Link href="/" className="flex items-center">
-          <Image src="/logo.svg" alt="Note Logo" width={85} height={85} className="m-3 mt-0 cursor-pointer" />
+          <Image src="/logo.svg" alt="Note Logo" width={85} height={85} className="m-2 my-3 mt-0 cursor-pointer" />
         </Link>
         <div className="relative">
           <button 
@@ -63,9 +63,8 @@ export default function Header() {
           )}
         </div>
       </div>
-      <div className="flex-grow flex justify-center items-center mb-5 mt-3">
-        {/* <Image src="/message.svg" alt="Note Logo" width={25} height={25} className="m-3 mr-5 cursor-pointer" /> */}
-        <a href="mailto:news@note.live" className="mr-10 mx-3 text-xs underline text-gray-300">news@note.live</a>
+      <div className="flex justify-between items-center mb-5 mt-3 px-2">
+        <a href="mailto:news@note.live" className="text-xs underline text-gray-300">news@note.live</a>
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="email"
