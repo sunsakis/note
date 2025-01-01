@@ -10,15 +10,16 @@ export default function SubscribeButton({ articleUrl }) {
   const { data: session } = useSession();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleSubscribe = async () => {
     setError(null);
     setIsLoading(true);
 
     if (!session) {
-      console.log("No session found, redirecting to sign in");
       setIsLoading(false);
-      return signIn('google');
+      return;
     }
 
     try {
@@ -40,7 +41,6 @@ export default function SubscribeButton({ articleUrl }) {
       }
 
       const { sessionId } = await response.json();
-
       const result = await stripe.redirectToCheckout({ sessionId });
 
       if (result.error) {
@@ -54,10 +54,32 @@ export default function SubscribeButton({ articleUrl }) {
     }
   };
 
+  const handleEmailSignIn = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const result = await signIn('email', {
+        email,
+        redirect: false,
+        callbackUrl: window.location.href,
+      });
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      setEmailSent(true);
+    } catch (error) {
+      setError('Failed to send login email. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div>
       <button
-        onClick={handleSubscribe}
+        onClick={() => session ? handleSubscribe() : signIn()}
         className="mt-4 inline-block text-blue-500 hover:underline"
         disabled={isLoading}
       >
