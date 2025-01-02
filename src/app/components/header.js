@@ -1,13 +1,21 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
+import { signOut as nextAuthSignOut, useSession } from 'next-auth/react';
 
 export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [email, setEmail] = useState('');
+  const { data: session, status } = useSession();
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const signOut = async () => {
+    await nextAuthSignOut();
   };
 
   const handleSubmit = async (e) => {
@@ -42,6 +50,15 @@ export default function Header() {
           <Image src="/logo.svg" alt="Note Logo" width={85} height={85} className="m-2 my-3 mt-0 cursor-pointer" />
         </Link>
         <div className="relative">
+          {session && ( // Only show header content if authenticated
+            <button
+              onClick={signOut}
+              className="text-white hover:text-blue-600 cursor-pointer mx-4"
+              title="Sign Out"
+            >
+              <FontAwesomeIcon icon={faUser} className="w-5 h-5" />
+            </button>
+          )}
           <button 
             onClick={toggleDropdown}
             className="text-white rounded hover:text-blue-600 underline font-bold"
