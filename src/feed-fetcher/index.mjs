@@ -8,7 +8,7 @@ import { feeds } from '../lib/feeds.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
-const CUTOFF_DATE = new Date('2024-10-20');
+const CUTOFF_DATE = new Date('2024-12-02');
 const parser = new Parser();
 
 function extractSlugFromUrl(url) {
